@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
-
+app.use(cors());
 mongoose.connect(
 	"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
 	{
@@ -14,10 +15,9 @@ mongoose.connect(
 app.get("/api/recipe", async (req, res) => {
 	try {
 		const randomRecipe = await mongoose.connection.db
-			.collection("recipe sharing")
-			.aggregate([{ $sample: { size: 1 } }])
+			.collection("recipe-sharing")
+			.aggregate([{ $sample: { size: 4 } }])
 			.toArray();
-
 		res.json(randomRecipe);
 	} catch (error) {
 		console.error(error);
