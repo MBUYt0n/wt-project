@@ -12,13 +12,43 @@ mongoose.connect(
 	}
 );
 
+
 app.get("/api/recipe", async (req, res) => {
 	try {
-		const randomRecipe = await mongoose.connection.db
+		const randomRecipes = await mongoose.connection.db
 			.collection("recipe-sharing")
-			.aggregate([{ $sample: { size: 4 } }])
+			.find({})
 			.toArray();
-		res.json(randomRecipe);
+
+		const hello123Recipes = await mongoose.connection.db
+			.collection("hello123")
+			.find({})
+			.toArray();
+
+		const goodmorningRecipes = await mongoose.connection.db
+			.collection("goodmorning")
+			.find({})
+			.toArray();
+
+		const yellosRecipes = await mongoose.connection.db
+			.collection("yellos")
+			.find({})
+			.toArray();
+
+		const lisansRecipes = await mongoose.connection.db
+			.collection("lisans")
+			.find({})
+			.toArray();
+
+		const allRecipes = [
+			...randomRecipes,
+			...hello123Recipes,
+			...goodmorningRecipes,
+			...yellosRecipes,
+			...lisansRecipes,
+		];
+
+		res.json(allRecipes);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Internal Server Error" });
