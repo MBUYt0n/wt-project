@@ -273,7 +273,7 @@ const RandomRecipes = () => {
 			cursor: "pointer",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
-			maxHeight: "50px", // Set a fixed height for collapsed state
+			maxHeight: "100px", // Set a fixed height for collapsed state
 			transition: "max-height 0.3s ease-in-out",
 			maxWidth: "66.666%", // Set to 2/3rds of the screen width
 		},
