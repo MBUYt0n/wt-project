@@ -328,7 +328,7 @@ const RandomRecipes = () => {
 
 			{randomRecipes.map((recipe, index) => (
 				<div
-					key={recipe._id}
+					key={`${recipe._id}${Math.floor(Math.random() * 900) + 100}`}
 					id="content"
 					style={{
 						...styles.content,
