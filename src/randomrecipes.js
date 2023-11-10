@@ -2,16 +2,45 @@ import React, { useState, useEffect } from "react";
 
 const RandomRecipes = () => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
+	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		fetch("http://localhost:5000/api/recipe")
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-				setRandomRecipes(data); // Update state with random recipes
-			})
-			.catch((error) => console.error("Error:", error));
-	}, []);
+useEffect(() => {
+	const loadMoreRecipes = () => {
+		if (!loading) {
+			setLoading(true);
+
+			fetch("http://localhost:5000/api/recipe")
+				.then((response) => response.json())
+				.then((data) => {
+					setRandomRecipes((prevRecipes) => [
+						...prevRecipes,
+						...data,
+					]);
+					setLoading(false);
+				})
+				.catch((error) => {
+					console.error("Error:", error);
+					setLoading(false);
+				});
+		}
+	};
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			if (entries[0].isIntersecting) {
+				loadMoreRecipes();
+			}
+		},
+		{ threshold: 0.1 }
+	);
+
+	observer.observe(document.getElementById("load-more-trigger"));
+
+	return () => {
+		observer.disconnect();
+	};
+}, [loading]);
+
 
 	const styles = {
 		container: {
@@ -77,6 +106,8 @@ const RandomRecipes = () => {
 					<div style={styles.smallerText}>{recipe.year}</div>
 				</div>
 			))}
+
+			<div id="load-more-trigger" style={{ height: "1px" }} />
 		</div>
 	);
 };
