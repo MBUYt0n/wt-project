@@ -26,7 +26,7 @@ app.get("/api/recipe", async (req, res) => {
 			.toArray();
 
 		const goodmorningRecipes = await mongoose.connection.db
-			.collection("goodmorning")
+			.collection("goodmornings")
 			.find({})
 			.toArray();
 

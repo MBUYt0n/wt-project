@@ -1,51 +1,59 @@
 import React, { useState, useEffect } from "react";
 
+const renderRecipeBody = (body) => {
+	return body.split("\n").map((line, i) => (
+		<React.Fragment key={i}>
+			{i > 0 && <br />} {/* Add line break if not the first line */}
+			{line}
+		</React.Fragment>
+	));
+};
+
 const RandomRecipes = () => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
 	const [loading, setLoading] = useState(false);
 
-useEffect(() => {
-	const loadMoreRecipes = () => {
-		if (!loading) {
-			setLoading(true);
+	useEffect(() => {
+		const loadMoreRecipes = () => {
+			if (!loading) {
+				setLoading(true);
 
-			fetch("http://localhost:5000/api/recipe")
-				.then((response) => response.json())
-				.then((data) => {
-					setRandomRecipes((prevRecipes) => [
-						...prevRecipes,
-						...data,
-					]);
-					setLoading(false);
-				})
-				.catch((error) => {
-					console.error("Error:", error);
-					setLoading(false);
-				});
-		}
-	};
-
-	const observer = new IntersectionObserver(
-		(entries) => {
-			if (entries[0].isIntersecting) {
-				loadMoreRecipes();
+				fetch("http://localhost:5000/api/recipe")
+					.then((response) => response.json())
+					.then((data) => {
+						setRandomRecipes((prevRecipes) => [
+							...prevRecipes,
+							...data,
+						]);
+						setLoading(false);
+					})
+					.catch((error) => {
+						console.error("Error:", error);
+						setLoading(false);
+					});
 			}
-		},
-		{ threshold: 0.1 }
-	);
+		};
 
-	observer.observe(document.getElementById("load-more-trigger"));
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					loadMoreRecipes();
+				}
+			},
+			{ threshold: 0.1 }
+		);
 
-	return () => {
-		observer.disconnect();
-	};
-}, [loading]);
+		observer.observe(document.getElementById("load-more-trigger"));
 
+		return () => {
+			observer.disconnect();
+		};
+	}, [loading]);
 
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
-			backgroundColor: "#f9f9f9",
+			backgroundColor: "#FF0000", // Red
 			padding: "20px",
 		},
 		content: {
@@ -58,7 +66,7 @@ useEffect(() => {
 			maxWidth: "600px",
 			marginLeft: "auto",
 			marginRight: "auto",
-			background: "#fff",
+			background: "#FFFF00", // Yellow
 			boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
 		},
 		expanded: {
@@ -73,6 +81,7 @@ useEffect(() => {
 		smallerText: {
 			fontSize: "16px",
 			color: "#555",
+			// whiteSpace: "pre-line", // Add this line for preserving line breaks
 		},
 	};
 
@@ -102,7 +111,9 @@ useEffect(() => {
 					onClick={() => handleExpand(index)}
 				>
 					<div style={styles.title}>{recipe.title}</div>
-					<div style={styles.smallerText}>{recipe.body}</div>
+					<div style={styles.smallerText}>
+						{renderRecipeBody(recipe.body)}
+					</div>
 					<div style={styles.smallerText}>{recipe.year}</div>
 				</div>
 			))}
