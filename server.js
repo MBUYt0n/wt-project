@@ -16,24 +16,26 @@ mongoose.connect(
 
 app.get("/api/recipe", async (req, res) => {
 	try {
-		const hello123Recipes = await getRecipes("hello123");
-		const goodmorningRecipes = await getRecipes("goodmornings");
-		const yellosRecipes = await getRecipes("yellos");
-		const lisansRecipes = await getRecipes("lisans");
+		const collections = await mongoose.connection.db
+			.listCollections()
+			.toArray();
 
-		const allRecipes = [
-			...hello123Recipes,
-			...goodmorningRecipes,
-			...yellosRecipes,
-			...lisansRecipes,
-		];
+		const allRecipes = await Promise.all(
+			collections.map(async (collection) => {
+				const recipes = await getRecipes(collection.name);
+				return recipes;
+			})
+		);
 
-		res.json(allRecipes);
+		const flattenedRecipes = [].concat(...allRecipes);
+
+		res.json(flattenedRecipes);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Internal Server Error" });
 	}
 });
+
 
 app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 	const recipeId = req.params.id;
