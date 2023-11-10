@@ -6,6 +6,7 @@ const RandomRecipes = () => {
 
 	useEffect(() => {
 		const loadMoreRecipes = () => {
+			console.log("Loading more recipes...");
 			if (!loading) {
 				setLoading(true);
 
@@ -51,6 +52,7 @@ const RandomRecipes = () => {
 	};
 
 	const handleLike = async (index, collectionName) => {
+		console.log("Handling like...");
 		try {
 			const response = await fetch(
 				`http://localhost:5000/api/recipe/like/${randomRecipes[index]._id}/${collectionName}`,
@@ -148,7 +150,7 @@ const RandomRecipes = () => {
 
 			{randomRecipes.map((recipe, index) => (
 				<div
-					key={`${recipe._id}${Math.floor(Math.random() * 900) + 100}`}
+					key={`${recipe._id}`}
 					id="content"
 					style={{
 						...styles.content,
@@ -158,14 +160,12 @@ const RandomRecipes = () => {
 				>
 					<div style={styles.leftContent}>
 						<span
-							onClick={() =>
-								handleLike(index, recipe.collection)
-							}
+							onClick={() => handleLike(index, recipe.collection)}
 							style={styles.likeIcon}
 						>
 							❤️
 						</span>
-						<div style={styles.likeCount}>{recipe.like / 2}</div>
+						<div style={styles.likeCount}>{recipe.like}</div>
 					</div>
 					<div style={styles.rightContent}>
 						<div style={styles.title}>{recipe.title}</div>

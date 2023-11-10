@@ -14,22 +14,43 @@ mongoose.connect(
 	}
 );
 
+// app.get("/api/recipe", async (req, res) => {
+// 	try {
+// 		const collections = await mongoose.connection.db
+// 			.listCollections()
+// 			.toArray();
+
+// 		const allRecipes = await Promise.all(
+// 			collections.map(async (collection) => {
+// 				const recipes = await getRecipes(collection.name);
+// 				return recipes;
+// 			})
+// 		);
+
+// 		const flattenedRecipes = [].concat(...allRecipes);
+
+// 		res.json(flattenedRecipes);
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json({ message: "Internal Server Error" });
+// 	}
+// });
+
 app.get("/api/recipe", async (req, res) => {
 	try {
-		const collections = await mongoose.connection.db
-			.listCollections()
-			.toArray();
+		const hello123Recipes = await getRecipes("hello123");
+		const goodmorningRecipes = await getRecipes("goodmornings");
+		const yellosRecipes = await getRecipes("yellos");
+		const lisansRecipes = await getRecipes("lisans");
 
-		const allRecipes = await Promise.all(
-			collections.map(async (collection) => {
-				const recipes = await getRecipes(collection.name);
-				return recipes;
-			})
-		);
+		const allRecipes = [
+			...hello123Recipes,
+			...goodmorningRecipes,
+			...yellosRecipes,
+			...lisansRecipes,
+		];
 
-		const flattenedRecipes = [].concat(...allRecipes);
-
-		res.json(flattenedRecipes);
+		res.json(allRecipes);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Internal Server Error" });
