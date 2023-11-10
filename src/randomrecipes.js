@@ -265,7 +265,7 @@ const RandomRecipes = () => {
 		content: {
 			display: "flex",
 			border: "2px solid #ccc",
-			padding: "10px",
+			padding: "10pppppppppppppppppppppppppppppppppx",
 			margin: "10px",
 			background: "#FFFF00", // Yellow
 			boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
