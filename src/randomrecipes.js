@@ -100,12 +100,18 @@ const RandomRecipes = () => {
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
-			backgroundColor: "#FFFFFF", // Red
 			padding: "20px",
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center", // Center the content horizontally
+			// backgroundImage:
+			// 	"url(https://wallpapers.com/images/high/pretty-pictures-v5yrtkstr7wronac.webp)", // Replace with your image URL
+			// backgroundSize: "cover",
+			// backgroundPosition: "center",
+			// backgroundColor: "rgba(255, 255, 255, 1)", // Translucent white background
+			// minHeight: "100vh", // Ensure the container takes at least the full viewport height
 		},
+
 		content: {
 			display: "flex",
 			border: "2px solid #ccc",
@@ -117,9 +123,8 @@ const RandomRecipes = () => {
 			cursor: "pointer",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
-			// maxHe    width: "100%", // Make the div take up full widthight: "100px", // Set a fixed height for collapsed state
 			transition: "max-height 0.3s ease-in-out",
-			maxWidth: "66.666%", // Set to 2/3rds of the screen width
+			borderRadius: "8px", // Adjust the value as needed
 		},
 		expanded: {
 			// transform: "scale(1.05)",
@@ -154,9 +159,9 @@ const RandomRecipes = () => {
 			cursor: "pointer",
 		},
 		image: {
-			width: "100%",
-			height: "auto",
-			maxHeight: "50px", // Set max height for the image
+			width: "400px",
+			height: "400px",
+			// maxHeight: "50px", // Set max height for the image
 		},
 	};
 
