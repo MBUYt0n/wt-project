@@ -100,26 +100,29 @@ const RandomRecipes = () => {
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
-			backgroundColor: "#000000", // Red
+			backgroundColor: "#FFFFFF", // Red
 			padding: "20px",
+			display: "flex",
+			flexDirection: "column",
+			alignItems: "center", // Center the content horizontally
 		},
 		content: {
 			display: "flex",
 			border: "2px solid #ccc",
 			padding: "10px",
 			margin: "10px",
-			background: "#00000F", // Yellow
+			background: "#FFFFFF", // Yellow
 			boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
 			overflow: "hidden",
 			cursor: "pointer",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
-			maxHeight: "100px", // Set a fixed height for collapsed state
+			// maxHe    width: "100%", // Make the div take up full widthight: "100px", // Set a fixed height for collapsed state
 			transition: "max-height 0.3s ease-in-out",
 			maxWidth: "66.666%", // Set to 2/3rds of the screen width
 		},
 		expanded: {
-			transform: "scale(1.05)",
+			// transform: "scale(1.05)",
 			maxHeight: "none",
 		},
 		leftContent: {
@@ -150,15 +153,20 @@ const RandomRecipes = () => {
 			color: "#FF0000",
 			cursor: "pointer",
 		},
+		image: {
+			width: "100%",
+			height: "auto",
+			maxHeight: "50px", // Set max height for the image
+		},
 	};
 
-	const renderRecipeBody = (body) => {
-		return (
+	const renderRecipeBody = (body, expanded) => {
+		return expanded ? (
 			<div
 				style={{ ...styles.smallerText, whiteSpace: "pre-line" }}
 				dangerouslySetInnerHTML={{ __html: body }}
 			/>
-		);
+		) : null;
 	};
 
 	return (
@@ -187,10 +195,13 @@ const RandomRecipes = () => {
 						<div style={styles.likeCount}>{recipe.likes}</div>
 					</div>
 					<div style={styles.rightContent}>
+						<img
+							src={recipe.image}
+							style={styles.image}
+							alt={recipe.title}
+						/>
 						<div style={styles.title}>{recipe.title}</div>
-						<div style={styles.smallerText}>
-							{renderRecipeBody(recipe.body)}
-						</div>
+						{renderRecipeBody(recipe.body, recipe.expanded)}
 						<div style={styles.smallerText}>{recipe.year}</div>
 					</div>
 				</div>
