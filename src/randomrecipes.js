@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 const RandomRecipes = () => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [likeLoading, setLikeLoading] = useState([]);
 
 	useEffect(() => {
 		const loadMoreRecipes = () => {
@@ -13,6 +14,7 @@ const RandomRecipes = () => {
 				fetch("http://localhost:5000/api/recipe")
 					.then((response) => response.json())
 					.then((data) => {
+						console.log(data);
 						setRandomRecipes((prevRecipes) => [
 							...prevRecipes,
 							...data,
@@ -53,7 +55,15 @@ const RandomRecipes = () => {
 
 	const handleLike = async (index, collectionName) => {
 		console.log("Handling like...");
+		if (likeLoading[index]) return;
+
 		try {
+			setLikeLoading((prevLoading) => {
+				const updatedLoading = [...prevLoading];
+				updatedLoading[index] = true;
+				return updatedLoading;
+			});
+
 			const response = await fetch(
 				`http://localhost:5000/api/recipe/like/${randomRecipes[index]._id}/${collectionName}`,
 				{
@@ -67,7 +77,10 @@ const RandomRecipes = () => {
 			if (response.ok) {
 				setRandomRecipes((prevRecipes) => {
 					const updatedRecipes = [...prevRecipes];
-					updatedRecipes[index].like += 1;
+					updatedRecipes[index] = {
+						...updatedRecipes[index],
+						likes: updatedRecipes[index].likes + 1,
+					};
 					return updatedRecipes;
 				});
 			} else {
@@ -75,21 +88,27 @@ const RandomRecipes = () => {
 			}
 		} catch (error) {
 			console.error("Error:", error);
+		} finally {
+			setLikeLoading((prevLoading) => {
+				const updatedLoading = [...prevLoading];
+				updatedLoading[index] = false;
+				return updatedLoading;
+			});
 		}
 	};
 
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
-			backgroundColor: "#FF0000", // Red
+			backgroundColor: "#000000", // Red
 			padding: "20px",
 		},
 		content: {
 			display: "flex",
 			border: "2px solid #ccc",
-			padding: "10pppppppppppppppppppppppppppppppppx",
+			padding: "10px",
 			margin: "10px",
-			background: "#FFFF00", // Yellow
+			background: "#00000F", // Yellow
 			boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
 			overflow: "hidden",
 			cursor: "pointer",
@@ -165,7 +184,7 @@ const RandomRecipes = () => {
 						>
 							❤️
 						</span>
-						<div style={styles.likeCount}>{recipe.like}</div>
+						<div style={styles.likeCount}>{recipe.likes}</div>
 					</div>
 					<div style={styles.rightContent}>
 						<div style={styles.title}>{recipe.title}</div>
