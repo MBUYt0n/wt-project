@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 
-const RandomRecipes = () => {
+const RandomRecipes = ({ credentials }) => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [likeLoading, setLikeLoading] = useState([]);
 
 	useEffect(() => {
-		const loadMoreRecipes = () => {
+		const loadMoreRecipes = async () => {
 			console.log("Loading more recipes...");
 			if (!loading) {
 				setLoading(true);
-
-				fetch("http://localhost:5000/api/recipe")
+				console.log(credentials.username, credentials.password);
+				fetch("http://localhost:5000/api/recipe", {
+					headers: {
+						username: credentials.usn,
+						password: credentials.pass,
+					},
+				})
 					.then((response) => response.json())
 					.then((data) => {
 						console.log(data);
@@ -42,7 +47,7 @@ const RandomRecipes = () => {
 		return () => {
 			observer.disconnect();
 		};
-	}, [loading]);
+	}, [loading, credentials]);
 
 	const handleExpand = (index) => {
 		const updatedRecipes = randomRecipes.map((recipe, i) =>
@@ -105,10 +110,10 @@ const RandomRecipes = () => {
 			flexDirection: "column",
 			alignItems: "center", // Center the content horizontally
 			// backgroundImage:
-			// 	"url(https://wallpapers.com/images/high/pretty-pictures-v5yrtkstr7wronac.webp)", // Replace with your image URL
+			// 	"url(https://cdn.wallpapersafari.com/51/81/GSdYF2.jpg)", // Replace with your image URL
 			// backgroundSize: "cover",
 			// backgroundPosition: "center",
-			// backgroundColor: "rgba(255, 255, 255, 1)", // Translucent white background
+			// backgroundColor: "rgba(255, 255, 255, 0.1)", // Translucent white background
 			// minHeight: "100vh", // Ensure the container takes at least the full viewport height
 		},
 

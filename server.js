@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(cors());
@@ -14,14 +15,58 @@ mongoose.connect(
 	}
 );
 
+// Middleware for user authentication
+const authenticateUser = async (req, res, next) => {
+	const { username, password } = req.headers;
+	console.log("Received authentication request:", { username, password });
+	if (!username || !password) {
+		return res.status(401).json({ message: "Unauthorized" });
+	}
+
+	try {
+		const credentialsCollection = await mongoose.connection.db.collection(
+			"credentials"
+		);
+		const user = await credentialsCollection.findOne({
+			username,
+			password,
+		});
+
+		if (!user) {
+			return res.status(401).json({ message: "Invalid credentials" });
+		}
+
+		// Attach user information to the request object
+		req.user = user;
+		next();
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Internal Server Error" });
+	}
+};
+
+// Middleware to check if the user is authenticated for /api/recipe
+const checkAuthenticationForRecipe = async (req, res, next) => {
+	console.log(req.user);
+	if (!req.user) {
+		return res.status(401).json({ message: "Unauthorized" });
+	}
+
+	next();
+};
+
+app.use("/api/recipe/like", authenticateUser);
+
+app.use("/api/recipe", checkAuthenticationForRecipe, authenticateUser);
+
 app.get("/api/recipe", async (req, res) => {
+	console.log("User:", req.user);
 	try {
 		const collections = await mongoose.connection.db
 			.listCollections()
 			.toArray();
 
 		const validCollections = collections.filter((collection) => {
-			// Check if the collection has the required labels
 			return (
 				collection.name !== "credentials" && collection.name !== "liked"
 			);
@@ -43,38 +88,40 @@ app.get("/api/recipe", async (req, res) => {
 	}
 });
 
-// Function to check if a collection has a specific field
-async function hasField(collectionName, fieldName) {
-	const collection = await mongoose.connection.db.collection(collectionName);
-	const document = await collection.findOne();
-	return document && fieldName in document;
-}
+// Route for user login
+app.post("/api/login", async (req, res) => {
+	const { usn, pass } = req.body;
 
-// app.get("/api/recipe", async (req, res) => {
-// 	try {
-// 		const hello123Recipes = await getRecipes("hello123");
-// 		const goodmorningRecipes = await getRecipes("goodmornings");
-// 		const yellosRecipes = await getRecipes("yellos");
-// 		const lisansRecipes = await getRecipes("lisans");
+	if (!usn || !pass) {
+		return res
+			.status(400)
+			.json({ message: "Missing username or password" });
+	}
 
-// 		const allRecipes = [
-// 			...hello123Recipes,
-// 			...goodmorningRecipes,
-// 			...yellosRecipes,
-// 			...lisansRecipes,
-// 		];
+	try {
+		const credentialsCollection = await mongoose.connection.db.collection(
+			"credentials"
+		);
+		const user = await credentialsCollection.findOne({
+			username: usn,
+			password: pass,
+		});
+		if (user && (await bcrypt.compare(pass, user.password))) {
+			res.status(200).json({ message: "Login successful!" });
+		} else {
+			res.status(401).json({ error: "Invalid credentials" });
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+});
 
-// 		res.json(allRecipes);
-// 	} catch (error) {
-// 		console.error(error);
-// 		res.status(500).json({ message: "Internal Server Error" });
-// 	}
-// });
-
+// Route to handle liking a recipe
 app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 	const recipeId = req.params.id;
 	const collectionName = req.params.collectionName;
-	console.log(collectionName);
+
 	try {
 		await updateLikes(collectionName, recipeId);
 

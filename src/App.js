@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import RandomRecipes from "./randomrecipes";
+import Login from "./login";
 
 const App = () => {
+	const [isLoggedIn, setLoggedIn] = useState(false);
+	const [credentials, setCredentials] = useState({});
+
+	const handleLoginSuccess = (username, password) => {
+		console.log(username, password);
+		setLoggedIn(true);
+		setCredentials({ username, password });
+	};
+
 	return (
 		<div>
-			<RandomRecipes />
+			{isLoggedIn ? (
+				<RandomRecipes credentials={credentials} />
+			) : (
+				<Login onLoginSuccess={handleLoginSuccess} />
+			)}
 		</div>
 	);
 };
