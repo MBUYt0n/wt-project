@@ -69,6 +69,41 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.post("/api/register", async (req, res) => {
+	const { username, password } = req.body;
+
+	if (!username || !password) {
+		return res
+			.status(400)
+			.json({ message: "Missing username or password" });
+	}
+
+	try {
+		// Check if the username already exists
+		const existingUser = await mongoose.connection.db
+			.collection("credentials")
+			.findOne({ username: username });
+
+		if (existingUser) {
+			return res.status(409).json({ error: "Username already exists" });
+		}
+
+		await mongoose.connection.db.collection("credentials").insertOne({
+			username: username,
+			password: password,
+		});
+
+		// Create a new empty collection with the same name as the username
+		await mongoose.connection.db.createCollection(username);
+
+		res.status(201).json({ message: "Registration successful!" });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+
+
 // Route to handle liking a recipe
 app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 	const recipeId = req.params.id;
