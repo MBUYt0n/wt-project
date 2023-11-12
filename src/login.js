@@ -1,30 +1,27 @@
 import React, { useState } from "react";
 
-
 const Login = ({ onLoginSuccess }) => {
-	const [usn, setUsername] = useState("");
-	const [pass, setPassword] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 
 	const handleLogin = async () => {
 		try {
-			// Send a POST request to the login endpoint on your server using fetch
 			const response = await fetch("http://localhost:5000/api/login", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					username: usn,
-					password: pass,
+					username: username,
+					password: password,
 				}),
 			});
 
 			const responseData = await response.json();
 
 			console.log(responseData.message);
-
-			// Call the onLoginSuccess prop to notify the parent component about the successful login
-			onLoginSuccess();
+			if (response.ok) onLoginSuccess(username, password);
+			else console.error("Login failed bozo", responseData.message);
 		} catch (error) {
 			console.error("Login failed:", error.message);
 		}
@@ -38,7 +35,7 @@ const Login = ({ onLoginSuccess }) => {
 					Username:
 					<input
 						type="text"
-						value={usn}
+						value={username}
 						onChange={(e) => setUsername(e.target.value)}
 					/>
 				</label>
@@ -47,7 +44,7 @@ const Login = ({ onLoginSuccess }) => {
 					Password:
 					<input
 						type="password"
-						value={pass}
+						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 				</label>

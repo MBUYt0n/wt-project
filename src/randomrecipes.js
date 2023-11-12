@@ -13,8 +13,8 @@ const RandomRecipes = ({ credentials }) => {
 				console.log(credentials.username, credentials.password);
 				fetch("http://localhost:5000/api/recipe", {
 					headers: {
-						username: credentials.usn,
-						password: credentials.pass,
+						username: credentials.username,
+						password: credentials.password,
 					},
 				})
 					.then((response) => response.json())
@@ -182,7 +182,7 @@ const RandomRecipes = ({ credentials }) => {
 	return (
 		<div style={styles.container}>
 			<h1 style={{ textAlign: "center", color: "#333" }}>
-				Random Recipes
+				Random Recipes {credentials.username}
 			</h1>
 
 			{randomRecipes.map((recipe, index) => (

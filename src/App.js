@@ -7,7 +7,6 @@ const App = () => {
 	const [credentials, setCredentials] = useState({});
 
 	const handleLoginSuccess = (username, password) => {
-		console.log(username, password);
 		setLoggedIn(true);
 		setCredentials({ username, password });
 	};
