@@ -86,3 +86,54 @@ const Login = ({ onLoginSuccess }) => {
 };
 
 export default Login;
+
+const styles = `
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #4caf50, #3498db);
+    color: black; /* Set text color to black */
+    text-align: center;
+    padding: 40px;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: black; /* Set text color to black */
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #fff;
+    color: #333;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+
+.signup-link {
+    display: block;
+    margin-top: 10px;
+    color: black; 
+    text-decoration: none;
+}
+`;
+
+const styleElement = document.createElement('style');
+styleElement.innerHTML = styles;
+document.head.appendChild(styleElement);
