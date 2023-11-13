@@ -20,6 +20,8 @@ const App = () => {
 		setShowRegister(false);
 	};
 
+	console.log("showRegister:", showRegister); // Log the current value of showRegister
+
 	return (
 		<div>
 			{isLoggedIn ? (
@@ -27,21 +29,20 @@ const App = () => {
 			) : (
 				<div>
 					{showRegister ? (
-						<RegisterPage
-							onRegisterSuccess={handleRegisterSuccess}
-						/>
+						<div>
+							<RegisterPage
+								onRegisterSuccess={handleRegisterSuccess}
+								setShowRegister={setShowRegister}
+							/>
+						</div>
 					) : (
-						<Login onLoginSuccess={handleLoginSuccess} />
+						<div>
+							<Login
+								onLoginSuccess={handleLoginSuccess}
+								setShowRegister={setShowRegister}
+							/>
+						</div>
 					)}
-
-					<p>
-						{showRegister
-							? "Already have an account? "
-							: "Don't have an account? "}
-						<button onClick={() => setShowRegister(!showRegister)}>
-							{showRegister ? "Login here!" : "Sign up here!"}
-						</button>
-					</p>
 				</div>
 			)}
 		</div>
