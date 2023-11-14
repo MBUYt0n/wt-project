@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import Navbar from "./navbar";
 
-const RandomRecipes = ({ credentials }) => {
+const RandomRecipes = ({ credentials, handleLogout }) => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [likeLoading, setLikeLoading] = useState([]);
+	const [commentText, setCommentText] = useState("");
+	const [commentingIndex, setCommentingIndex] = useState(null);
 
 	useEffect(() => {
 		const loadMoreRecipes = async () => {
@@ -58,11 +61,12 @@ const RandomRecipes = ({ credentials }) => {
 		setRandomRecipes(updatedRecipes);
 	};
 
-	const handleLike = async (index, collectionName) => {
+	const handleLike = async (index, collectionName, clickEvent) => {
 		console.log("Handling like...");
 		if (likeLoading[index]) return;
 
 		try {
+			clickEvent.stopPropagation();
 			setLikeLoading((prevLoading) => {
 				const updatedLoading = [...prevLoading];
 				updatedLoading[index] = true;
@@ -75,6 +79,7 @@ const RandomRecipes = ({ credentials }) => {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
+						username: credentials.username,
 					},
 				}
 			);
@@ -102,19 +107,36 @@ const RandomRecipes = ({ credentials }) => {
 		}
 	};
 
+	const handleComment = (index, clickEvent) => {
+		clickEvent.stopPropagation()
+		setCommentingIndex(index);
+	};
+
+	const handlePostComment = async (index) => {
+		console.log(
+			`Posting comment for recipe at index ${index}: ${commentText}`
+		);
+
+		// Perform the logic to post the comment to the server
+		// ...
+
+		// Clear the comment text and reset the commentingIndex
+		setCommentText("");
+		setCommentingIndex(null);
+	};
+
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
 			padding: "20px",
 			display: "flex",
 			flexDirection: "column",
-			alignItems: "center", // Center the content horizontally
-			// backgroundImage:
-			// 	"url(https://cdn.wallpapersafari.com/51/81/GSdYF2.jpg)", // Replace with your image URL
-			// backgroundSize: "cover",
-			// backgroundPosition: "center",
-			// backgroundColor: "rgba(255, 255, 255, 0.1)", // Translucent white background
-			// minHeight: "100vh", // Ensure the container takes at least the full viewport height
+			alignItems: "center",
+			backgroundImage: "url('/public/images/bg.jpeg')",
+			backgroundRepeat: "no-repeat",
+			backgroundPosition: "10% 0",
+			backgroundAttachment: "fixed",
+			backgroundSize: "cover",
 		},
 
 		content: {
@@ -122,23 +144,22 @@ const RandomRecipes = ({ credentials }) => {
 			border: "2px solid #ccc",
 			padding: "10px",
 			margin: "10px",
-			background: "#FFFFFF", // Yellow
+			background: "#FFFFFF",
 			boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
 			overflow: "hidden",
 			cursor: "pointer",
 			textOverflow: "ellipsis",
 			whiteSpace: "nowrap",
 			transition: "max-height 0.3s ease-in-out",
-			borderRadius: "8px", // Adjust the value as needed
+			borderRadius: "8px",
 		},
 		expanded: {
-			// transform: "scale(1.05)",
 			maxHeight: "none",
 		},
 		leftContent: {
 			display: "flex",
 			flexDirection: "column",
-			marginRight: "10px", // Adjust as needed for spacing
+			marginRight: "10px",
 		},
 		rightContent: {
 			flex: 1,
@@ -164,9 +185,8 @@ const RandomRecipes = ({ credentials }) => {
 			cursor: "pointer",
 		},
 		image: {
-			width: "400px",
-			height: "400px",
-			// maxHeight: "50px", // Set max height for the image
+			width: "500px",
+			height: "500px",
 		},
 	};
 
@@ -180,44 +200,87 @@ const RandomRecipes = ({ credentials }) => {
 	};
 
 	return (
-		<div style={styles.container}>
-			<h1 style={{ textAlign: "center", color: "#333" }}>
-				Random Recipes {credentials.username}
-			</h1>
+		<div>
+			<Navbar credentials={credentials} handleLogout={handleLogout}/>
+			<div style={styles.container}>
+				<h1 style={{ textAlign: "center", color: "#333" }}>
+					Random Recipes
+				</h1>
 
-			{randomRecipes.map((recipe, index) => (
-				<div
-					key={`${recipe._id}`}
-					id="content"
-					style={{
-						...styles.content,
-						...(recipe.expanded && styles.expanded),
-					}}
-					onClick={() => handleExpand(index)}
-				>
-					<div style={styles.leftContent}>
-						<span
-							onClick={() => handleLike(index, recipe.collection)}
-							style={styles.likeIcon}
-						>
-							❤️
-						</span>
-						<div style={styles.likeCount}>{recipe.likes}</div>
-					</div>
-					<div style={styles.rightContent}>
-						<img
-							src={recipe.image}
-							style={styles.image}
-							alt={recipe.title}
-						/>
-						<div style={styles.title}>{recipe.title}</div>
-						{renderRecipeBody(recipe.body, recipe.expanded)}
-						<div style={styles.smallerText}>{recipe.year}</div>
-					</div>
-				</div>
-			))}
+				{randomRecipes.map((recipe, index) => (
+					<div
+						key={`${recipe._id}`}
+						id="content"
+						style={{
+							...styles.content,
+							...(recipe.expanded && styles.expanded),
+						}}
+						onClick={() => handleExpand(index)}
+					>
+						<div style={styles.leftContent}>
+							<span
+								onClick={(clickEvent) =>
+									handleLike(
+										index,
+										recipe.collection,
+										clickEvent
+									)
+								}
+								style={styles.likeIcon}
+							>
+								❤️
+							</span>
+							<div style={styles.likeCount}>{recipe.likes}</div>
 
-			<div id="load-more-trigger" style={{ height: "1px" }} />
+							{/* Comment symbol */}
+							<span
+								onClick={(clickEvent) => handleComment(index, clickEvent)}
+								style={{
+									...styles.likeIcon,
+									marginLeft: "10px",
+								}}
+							>
+								💬
+							</span>
+						</div>
+
+						<div style={styles.rightContent}>
+							<img
+								src={recipe.image}
+								style={styles.image}
+								alt={recipe.title}
+							/>
+							<div style={styles.title}>{recipe.title}</div>
+							{renderRecipeBody(recipe.body, recipe.expanded)}
+							<div style={styles.smallerText}>{recipe.year}</div>
+
+							{/* Comment box */}
+							{commentingIndex === index && (
+								<div>
+									<textarea
+										rows="3"
+										cols="40"
+										placeholder="Type your comment here..."
+										value={commentText}
+										onChange={(e) =>
+											setCommentText(e.target.value)
+										}
+									/>
+									<button
+										onClick={() =>
+											handlePostComment(index)
+										}
+									>
+										Post Comment
+									</button>
+								</div>
+							)}
+						</div>
+					</div>
+				))}
+
+				<div id="load-more-trigger" style={{ height: "1px" }} />
+			</div>
 		</div>
 	);
 };

@@ -20,12 +20,18 @@ const App = () => {
 		setShowRegister(false);
 	};
 
-	console.log("showRegister:", showRegister); // Log the current value of showRegister
+	const handleLogout = (username, password) => {
+		setLoggedIn(false);
+		setCredentials({ username: "", password: "" });
+	};
 
 	return (
 		<div>
 			{isLoggedIn ? (
-				<RandomRecipes credentials={credentials} />
+				<RandomRecipes
+					credentials={credentials}
+					handleLogout={handleLogout}
+				/>
 			) : (
 				<div>
 					{showRegister ? (

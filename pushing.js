@@ -347,7 +347,7 @@
 
 const mongoose = require("mongoose");
 
-async function fetchData(username, password) {
+async function fetchData(username, recipeId) {
 	try {
 		await mongoose.connect(
 			"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
@@ -357,20 +357,28 @@ async function fetchData(username, password) {
 			}
 		);
 
-		const credentialsCollection =
-			mongoose.connection.db.collection("credentials");
+		// const credentialsCollection =
+		// 	mongoose.connection.db.collection("credentials");
 
-		const user = await credentialsCollection.findOne({
-			username: username,
-			password: password,
-		});
+		// const user = await credentialsCollection.findOne({
+		// 	username: username,
+		// 	password: password,
+		// });
 
-		if (user) {
-			console.log(user);
-		} else {
-			console.log("nope");
-		}
+		// if (user) {
+		// 	console.log(user);
+		// } else {
+		// 	console.log("nope");
+		// }
 
+
+		const hasLiked = await mongoose.connection.db
+			.collection("liked")
+			.findOne({
+				user: username,
+				liked:recipeId
+			});
+			console.log(hasLiked)
 		// Close the connection after fetching data
 		await mongoose.connection.close();
 	} catch (error) {
@@ -379,4 +387,4 @@ async function fetchData(username, password) {
 }
 
 // Call the fetchData function
-fetchData("hello123", "bye123");
+fetchData("hello123", "654ce1e50f6f7a2fba8bcf60");
