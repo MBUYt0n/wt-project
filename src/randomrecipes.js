@@ -132,11 +132,7 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",
-			backgroundImage: "url('/public/images/bg.jpeg')",
-			backgroundRepeat: "no-repeat",
-			backgroundPosition: "10% 0",
-			backgroundAttachment: "fixed",
-			backgroundSize: "cover",
+			background: "linear-gradient(to right, #4caf50, #3498db)",
 		},
 
 		content: {
