@@ -3,6 +3,7 @@ import React, { useState } from "react";
 const Login = ({ onLoginSuccess, setShowRegister }) => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [errorDisp, setErrorDisp] = useState(false);
 
 	const handleLogin = async () => {
 		try {
@@ -21,7 +22,10 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 
 			console.log(responseData.message);
 			if (response.ok) onLoginSuccess(username, password);
-			else console.error("Login failed bozo", responseData.message);
+			else {
+				setErrorDisp(true);
+				console.error("Login failed bozo", responseData.message);
+			}
 		} catch (error) {
 			console.error("Login failed:", error.message);
 		}
@@ -87,6 +91,13 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 					/>
 				</label>
 				<br />
+				<div>
+					{errorDisp ? (
+						<label style={{ color: "red" }}>
+							Wrong Password, please try again
+						</label>
+					) : null}
+				</div>
 				<button
 					type="button"
 					style={styles.button}
@@ -95,7 +106,12 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 					Login
 				</button>
 				<p>Dont have an account? </p>
-				<button onClick={() => setShowRegister(true)} style={styles.button}>Register</button>
+				<button
+					onClick={() => setShowRegister(true)}
+					style={styles.button}
+				>
+					Register
+				</button>
 			</div>
 		</div>
 	);
