@@ -83,7 +83,6 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 					},
 				}
 			);
-
 			if (response.ok) {
 				setRandomRecipes((prevRecipes) => {
 					const updatedRecipes = [...prevRecipes];
