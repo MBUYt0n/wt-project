@@ -149,11 +149,9 @@ app.post("/api/changePassword", async (req, res) => {
       return res.status(401).json({ error: "Incorrect current password" });
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
     await credentialsCollection.updateOne(
       { username: username },
-      { $set: { password: hashedNewPassword } }
+      { $set: { password: newPassword } }
     );
 
     res.status(200).json({ message: "Password changed successfully!" });
