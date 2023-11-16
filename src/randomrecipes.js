@@ -107,7 +107,7 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 	};
 
 	const handleComment = (index, clickEvent) => {
-		clickEvent.stopPropagation()
+		clickEvent.stopPropagation();
 		setCommentingIndex(index);
 	};
 
@@ -131,7 +131,8 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",
-			background: "radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%)",
+			background:
+				"radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%)",
 		},
 
 		content: {
@@ -183,20 +184,54 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 			width: "500px",
 			height: "500px",
 		},
+		expandedImageContainer: {
+			width: "100%", // Make sure this div takes up the full width
+			textAlign: "center",
+		},
+		expandedImage: {
+			width: "500px",
+			height: "500px",
+			display: "inline-block",
+		},
 	};
 
 	const renderRecipeBody = (body, expanded) => {
-		return expanded ? (
-			<div
-				style={{ ...styles.smallerText, whiteSpace: "pre-line" }}
-				dangerouslySetInnerHTML={{ __html: body }}
-			/>
-		) : null;
+		if (expanded) {
+			var howToMakeIndex = body.toLowerCase().indexOf("how to make");
+			if (howToMakeIndex === -1)
+				howToMakeIndex = body.toLowerCase().indexOf("method");
+
+			if (howToMakeIndex !== -1) {
+				const firstHalf = body.slice(0, howToMakeIndex);
+				const secondHalf = body.slice(howToMakeIndex);
+
+				return expanded ? (
+					<div style={{ display: "flex" }}>
+						<div style={{ flex: 1 }}>
+							<div
+								style={styles.smallerText}
+								dangerouslySetInnerHTML={{
+									__html: firstHalf,
+								}}
+							></div>
+						</div>
+						<div style={{ flex: 1 }}>
+							<div
+								style={styles.smallerText}
+								dangerouslySetInnerHTML={{
+									__html: secondHalf,
+								}}
+							></div>
+						</div>
+					</div>
+				) : null;
+			}
+		}
 	};
 
 	return (
 		<div>
-			<Navbar credentials={credentials} handleLogout={handleLogout}/>
+			<Navbar credentials={credentials} handleLogout={handleLogout} />
 			<div style={styles.container}>
 				<h1 style={{ textAlign: "center", color: "#333" }}>
 					Random Recipes
@@ -229,7 +264,9 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 
 							{/* Comment symbol */}
 							<span
-								onClick={(clickEvent) => handleComment(index, clickEvent)}
+								onClick={(clickEvent) =>
+									handleComment(index, clickEvent)
+								}
 								style={{
 									...styles.likeIcon,
 									marginLeft: "10px",
@@ -240,11 +277,18 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 						</div>
 
 						<div style={styles.rightContent}>
+							<div style={recipe.expanded ? styles.expandedImageContainer : {}}>
 							<img
 								src={recipe.image}
-								style={styles.image}
+								style={
+									recipe.expanded
+										? styles.expandedImage
+										: 
+									styles.image
+								}
 								alt={recipe.title}
 							/>
+							</div>
 							<div style={styles.title}>{recipe.title}</div>
 							{renderRecipeBody(recipe.body, recipe.expanded)}
 							<div style={styles.smallerText}>{recipe.year}</div>
@@ -262,9 +306,7 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 										}
 									/>
 									<button
-										onClick={() =>
-											handlePostComment(index)
-										}
+										onClick={() => handlePostComment(index)}
 									>
 										Post Comment
 									</button>
