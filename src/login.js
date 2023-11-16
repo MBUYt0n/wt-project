@@ -34,7 +34,8 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 	const styles = {
 		container: {
 			fontFamily: "Arial, sans-serif",
-			background: "linear-gradient(to right, #4caf50, #3498db)",
+			background:
+				"radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%)",
 			color: "black",
 			textAlign: "center",
 			height: "100vh",
