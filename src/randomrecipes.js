@@ -132,7 +132,7 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 			display: "flex",
 			flexDirection: "column",
 			alignItems: "center",
-			background: "linear-gradient(to right, #4caf50, #3498db)",
+			background: "radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%)",
 		},
 
 		content: {

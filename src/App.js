@@ -29,7 +29,7 @@ const App = () => {
 	return (
 		<div>
 			{isLoggedIn ? (
-				<ProfilePage
+				<RandomRecipes
 					credentials={credentials}
 					handleLogout={handleLogout}
 				/>
