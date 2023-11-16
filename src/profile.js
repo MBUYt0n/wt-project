@@ -1,17 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Profilepage= () => {
+const ProfilePage = ({ credentials }) => {
+  const [activeTab, setActiveTab] = useState('posts');
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
-    contactInfo: '',
-    location: '',
-    workEducation: '',
-    interestsHobbies: '',
     currentPassword: '',
     newPassword: '',
     confirmNewPassword: '',
   });
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await fetch(`/api/profile/${credentials.username}`, {
+          headers: {
+            Authorization: `Bearer ${credentials.password}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setFormData({
+            name: data.name || '',
+            bio: data.bio || '',
+            currentPassword: '',
+            newPassword: '',
+            confirmNewPassword: '',
+          });
+        } else {
+          console.error('Failed to fetch profile data');
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    fetchProfileData();
+  }, [credentials]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,10 +47,90 @@ const Profilepage= () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    console.log('Form submitted:', formData);
+
+    const { name, bio, currentPassword, newPassword, confirmNewPassword } = formData;
+
+    try {
+      // Update profile
+      const profileResponse = await fetch(`/api/profile/${credentials.username}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${credentials.password}`,
+        },
+        body: JSON.stringify({ name, bio }),
+      });
+
+      if (!profileResponse.ok) {
+        console.error('Failed to update profile');
+        return;
+      }
+
+      // Change password
+      if (newPassword && confirmNewPassword) {
+        const passwordResponse = await fetch('/api/changePassword', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${credentials.password}`,
+          },
+          body: JSON.stringify({
+            username: credentials.username,
+            currentPassword,
+            newPassword,
+          }),
+        });
+
+        if (!passwordResponse.ok) {
+          console.error('Failed to change password');
+          return;
+        }
+
+        console.log('Password changed successfully!');
+      }
+
+      console.log('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    const { currentPassword, newPassword, confirmNewPassword } = formData;
+
+    try {
+      if (newPassword && confirmNewPassword) {
+        const passwordResponse = await fetch('/api/changePassword', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${credentials.password}`,
+          },
+          body: JSON.stringify({
+            username: credentials.username,
+            currentPassword,
+            newPassword,
+          }),
+        });
+
+        if (!passwordResponse.ok) {
+          console.error('Failed to change password');
+          return;
+        }
+
+        console.log('Password changed successfully!');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+    }
+  };
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -52,15 +158,6 @@ const Profilepage= () => {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          }
-
-          .profile-picture {
-            max-width: 150px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
           }
 
           form {
@@ -99,28 +196,22 @@ const Profilepage= () => {
             border-radius: 8px;
           }
 
-          .activity-feed table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+          .tab {
+            display: inline-block;
+            padding: 10px 15px;
+            cursor: pointer;
+            background: #eee;
+            border-radius: 5px;
+            margin-right: 10px;
           }
 
-          .activity-feed table td, .activity-feed table th {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+          .tab:hover {
+            background: #ddd;
           }
 
-          .activity-feed table th {
-            background: linear-gradient(to bottom, #333, #555);
+          .active-tab {
+            background: linear-gradient(to bottom, #555, #333);
             color: #fff;
-          }
-
-          .activity-feed {
-            margin-top: 20px;
-            background: linear-gradient(to bottom, #f2f2f2, #d9d9d9);
-            padding: 20px;
-            border-radius: 8px;
           }
         `}
       </style>
@@ -130,98 +221,90 @@ const Profilepage= () => {
       </header>
 
       <section>
-        <img className="profile-picture" src="profile-picture.jpg" alt="Profile Picture" />
         <form onSubmit={handleSubmit}>
           <label htmlFor="name">Name/Username:</label>
-          <input type="text" id="name" name="name" placeholder="Username" onChange={handleChange} />
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="John Doe"
+            value={formData.name}
+            onChange={handleChange}
+          />
 
           <label htmlFor="bio">Bio/Description:</label>
-          <textarea id="bio" name="bio" placeholder="A brief description..." rows="4" onChange={handleChange}></textarea>
-
-          <label htmlFor="contact-info">Contact Information:</label>
-          <input type="text" id="contact-info" name="contactInfo" placeholder="example@email.com" onChange={handleChange} />
-
-          <label htmlFor="location">Location:</label>
-          <input type="text" id="location" name="location" placeholder="City, Country" onChange={handleChange} />
-
-          <label htmlFor="work-education">Work/Education:</label>
-          <input type="text" id="work-education" name="workEducation" placeholder="Job Title | University, Degree" onChange={handleChange} />
-
-          <label htmlFor="interests-hobbies">Interests/Hobbies:</label>
-          <input type="text" id="interests-hobbies" name="interestsHobbies" placeholder="Reading, Traveling, Coding" onChange={handleChange} />
+          <textarea
+            id="bio"
+            name="bio"
+            placeholder="A brief description..."
+            rows="4"
+            value={formData.bio}
+            onChange={handleChange}
+          ></textarea>
 
           <button type="submit">Save Changes</button>
         </form>
 
         <div className="password-change">
           <h3>Password Change</h3>
-          <form>
+          <form onSubmit={handlePasswordChange}>
             <label htmlFor="current-password">Current Password:</label>
-            <input type="password" id="current-password" name="currentPassword" required onChange={handleChange} />
+            <input
+              type="password"
+              id="current-password"
+              name="currentPassword"
+              required
+              value={formData.currentPassword}
+              onChange={handleChange}
+            />
 
             <label htmlFor="new-password">New Password:</label>
-            <input type="password" id="new-password" name="newPassword" required onChange={handleChange} />
+            <input
+              type="password"
+              id="new-password"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+            />
 
             <label htmlFor="confirm-new-password">Confirm New Password:</label>
-            <input type="password" id="confirm-new-password" name="confirmNewPassword" required onChange={handleChange} />
+            <input
+              type="password"
+              id="confirm-new-password"
+              name="confirmNewPassword"
+              value={formData.confirmNewPassword}
+              onChange={handleChange}
+            />
 
             <button type="submit">Change Password</button>
           </form>
         </div>
 
-        <div className="activity-feed">
-          <h3>Activity Feed</h3>
-
-          <h4>Posts</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Posted a new photo</td>
-                <td>2023-11-07</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h4>Comments</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Commented on a post</td>
-                <td>2023-11-06</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h4>Saved Options</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Saved a recipe</td>
-                <td>2023-11-05</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="tab-container">
+          <div
+            className={`tab ${activeTab === 'posts' && 'active-tab'}`}
+            onClick={() => handleTabClick('posts')}
+          >
+            Posts
+          </div>
+          <div
+            className={`tab ${activeTab === 'comments' && 'active-tab'}`}
+            onClick={() => handleTabClick('comments')}
+          >
+            Comments
+          </div>
+          <div
+            className={`tab ${activeTab === 'liked' && 'active-tab'}`}
+            onClick={() => handleTabClick('liked')}
+          >
+            Liked
+          </div>
         </div>
+
+        {/* Additional code for posts, comments, and liked sections */}
       </section>
     </div>
   );
 };
-export default Profilepage;
+
+export default ProfilePage;
