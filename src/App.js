@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Login from "./login";
-import RegisterPage from "./register";
-import ProfilePage from "./profile";
+import Login from "./Login"; // Make sure to use the correct path
+import RegisterPage from "./Register"; // Make sure to use the correct path
+import ProfilePage from "./Profile"; // Make sure to use the correct path
 
 const App = () => {
   // State to manage authentication status and credentials
@@ -29,30 +29,39 @@ const App = () => {
     setCredentials({ username: "", password: "" });
   };
 
-	return (
-		<div>
-			{isLoggedIn ? (
-				<RandomRecipes
-					credentials={credentials}
-					handleLogout={handleLogout}
-				/>
-			) : (
-				<div>
-					{showRegister ? (
-						<RegisterPage
-							onRegisterSuccess={handleRegisterSuccess}
-							setShowRegister={setShowRegister}
-						/>
-					) : (
-						<Login
-							onLoginSuccess={handleLoginSuccess}
-							setShowRegister={setShowRegister}
-						/>
-					)}
-				</div>
-			)}
-		</div>
-	);
+  // Callback for password change
+  const handleChangePassword = (newPassword) => {
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      password: newPassword,
+    }));
+  };
+
+  return (
+    <div>
+      {isLoggedIn ? (
+        <ProfilePage
+          credentials={credentials}
+          handleLogout={handleLogout}
+          handleChangePassword={handleChangePassword}
+        />
+      ) : (
+        <div>
+          {showRegister ? (
+            <RegisterPage
+              onRegisterSuccess={handleRegisterSuccess}
+              setShowRegister={setShowRegister}
+            />
+          ) : (
+            <Login
+              onLoginSuccess={handleLoginSuccess}
+              setShowRegister={setShowRegister}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default App;
