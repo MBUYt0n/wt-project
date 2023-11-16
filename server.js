@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require('body-parser');
-
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -159,9 +158,11 @@ app.post("/api/changePassword", async (req, res) => {
       return res.status(401).json({ error: "Incorrect current password" });
     }
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     await credentialsCollection.updateOne(
       { username: username },
-      { $set: { password: newPassword } }
+      { $set: { password: hashedPassword } }
     );
 
     res.status(200).json({ message: "Password changed successfully!" });
@@ -171,32 +172,21 @@ app.post("/api/changePassword", async (req, res) => {
   }
 });
 
-async function getRecipes(collectionName) {
-  return await mongoose.connection.db
-    .collection(collectionName)
-    .find({})
-    .toArray();
-}
-app.post('/saveContent', async (req, res) => {
+app.post('/api/saveContent', async (req, res) => {
   const { title, content, image, date, username, likes } = req.body;
   if (!title || !content || !date || !username) {
     return res.status(400).json({ message: 'Title, content, date, and username are required fields.' });
   }
   try {
-    const client = await MongoClient.connect(mongoURL, {
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-    });
-    const db = client.db();
     const collectionName = username;
 
     // Check if collection exists, create if it doesn't
-    const collectionExists = await db.listCollections({ name: collectionName }).hasNext();
+    const collectionExists = await mongoose.connection.db.listCollections({ name: collectionName }).hasNext();
     if (!collectionExists) {
-      await db.createCollection(collectionName);
+      await mongoose.connection.db.createCollection(collectionName);
       console.log('Created new collection');
     }
-    const collection = db.collection(collectionName);
+    const collection = mongoose.connection.db.collection(collectionName);
     const newContent = {
       title: title,
       content: content,
