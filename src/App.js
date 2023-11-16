@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import Login from "./Login"; // Make sure to use the correct path
-import RegisterPage from "./Register"; // Make sure to use the correct path
-import ProfilePage from "./Profile"; // Make sure to use the correct path
+import Login from "./login"; // Make sure to use the correct path
+import RegisterPage from "./register"; // Make sure to use the correct path
+import ProfilePage from "./profile"; // Make sure to use the correct path
+import RandomRecipes from "./randomrecipes"
 
 const App = () => {
   // State to manage authentication status and credentials
@@ -40,7 +41,7 @@ const App = () => {
   return (
     <div>
       {isLoggedIn ? (
-        <ProfilePage
+        <RandomRecipes
           credentials={credentials}
           handleLogout={handleLogout}
           handleChangePassword={handleChangePassword}
