@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const Login = ({ onLoginSuccess, setShowRegister }) => {
+	const [isButtonHovered, setButtonHovered] = useState(false);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [errorDisp, setErrorDisp] = useState(false);
@@ -59,8 +60,10 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 			boxSizing: "border-box",
 		},
 		button: {
-			backgroundColor: "#fff",
-			color: "#333",
+			background: isButtonHovered
+				? "linear-gradient(to right, #4caf50, #45a049)"
+				: "linear-gradient(to right, #45a049, #4caf50)",
+			color: "#fff",
 			padding: "12px 20px",
 			border: "none",
 			borderRadius: "4px",
@@ -103,6 +106,8 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 					type="button"
 					style={styles.button}
 					onClick={handleLogin}
+					onMouseEnter={() => setButtonHovered(true)}
+					onMouseLeave={() => setButtonHovered(false)}
 				>
 					Login
 				</button>
@@ -110,6 +115,8 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 				<button
 					onClick={() => setShowRegister(true)}
 					style={styles.button}
+					onMouseEnter={() => setButtonHovered(true)}
+					onMouseLeave={() => setButtonHovered(false)}
 				>
 					Register
 				</button>

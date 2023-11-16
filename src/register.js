@@ -38,7 +38,8 @@ const RegisterPage = ({ onRegisterSuccess, setShowRegister }) => {
 		body: {
 			fontFamily:
 				'"Segoe UI", "Tahoma", "Geneva", "Verdana", "sans-serif"',
-			background: "linear-gradient(to right, #667eea, #764ba2)",
+			background:
+				"radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%)",
 			margin: 0,
 			padding: 0,
 			display: "flex",
