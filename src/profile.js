@@ -47,51 +47,60 @@ const ProfilePage = ({ credentials }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const { name, bio, currentPassword, newPassword, confirmNewPassword } = formData;
-
+  const handleProfileUpdate = async () => {
     try {
-      // Update profile
-      const profileResponse = await fetch(`/api/profile/${credentials.username}`, {
-        method: 'PUT',
+      const response = await fetch('/api/updateProfile', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${credentials.password}`,
         },
-        body: JSON.stringify({ name, bio }),
+        body: JSON.stringify({
+          username: credentials.username,
+          name: formData.name,
+          bio: formData.bio,
+        }),
       });
 
-      if (!profileResponse.ok) {
+      if (response.ok) {
+        console.log('Profile updated successfully!');
+      } else {
         console.error('Failed to update profile');
-        return;
       }
-
-      // Change password
-      if (newPassword && confirmNewPassword) {
-        const passwordResponse = await fetch('/api/changePassword', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${credentials.password}`,
-          },
-          body: JSON.stringify({
-            username: credentials.username,
-            currentPassword,
-            newPassword,
-          }),
-        });
-
-        if (!passwordResponse.ok) {
-          console.error('Failed to change password');
-          return;
-        }
-      }
-
-      console.log('Profile updated successfully!');
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error updating profile:', error);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const { currentPassword, newPassword, confirmNewPassword } = formData;
+
+    if (newPassword !== confirmNewPassword) {
+      console.error('New passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/changePassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${credentials.password}`,
+        },
+        body: JSON.stringify({
+          username: credentials.username,
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Password changed successfully!');
+      } else {
+        console.error('Failed to change password');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
     }
   };
 
@@ -115,8 +124,9 @@ const ProfilePage = ({ credentials }) => {
 
   return (
     <div>
-      {`
-           body {
+      <style>
+        {`
+          body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -193,22 +203,69 @@ const ProfilePage = ({ credentials }) => {
             color: #fff;
           }
         `}
+      </style>
 
       <header>
         <h1>Profile Page</h1>
       </header>
 
       <section>
-        <form onSubmit={handleSubmit}>
-          {/* ... (form fields) ... */}
-          <button type="submit">Save Changes</button>
+        <form>
+          <label htmlFor="name">Name/Username:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="John Doe"
+            value={formData.name}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="bio">Bio/Description:</label>
+          <textarea
+            id="bio"
+            name="bio"
+            placeholder="A brief description..."
+            rows="4"
+            value={formData.bio}
+            onChange={handleChange}
+          ></textarea>
+
+          <button type="button" onClick={handleProfileUpdate}>Save Changes</button>
         </form>
 
         <div className="password-change">
           <h3>Password Change</h3>
           <form>
-            {/* ... (password change fields) ... */}
-            <button type="submit">Change Password</button>
+            <label htmlFor="current-password">Current Password:</label>
+            <input
+              type="password"
+              id="current-password"
+              name="currentPassword"
+              required
+              value={formData.currentPassword}
+              onChange={handleChange}
+            />
+
+            <label htmlFor="new-password">New Password:</label>
+            <input
+              type="password"
+              id="new-password"
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+            />
+
+            <label htmlFor="confirm-new-password">Confirm New Password:</label>
+            <input
+              type="password"
+              id="confirm-new-password"
+              name="confirmNewPassword"
+              value={formData.confirmNewPassword}
+              onChange={handleChange}
+            />
+
+            <button type="button" onClick={handleChangePassword}>Change Password</button>
           </form>
         </div>
 
