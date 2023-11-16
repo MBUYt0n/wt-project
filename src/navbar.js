@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Navbar = ({ credentials, handleLogout }) => {
+const Navbar = ({ credentials, handleLogout, changePage }) => {
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 
 	const toggleDropdown = () => {
@@ -8,7 +8,7 @@ const Navbar = ({ credentials, handleLogout }) => {
 	};
 
 	const logout = () => {
-		alert("Do you want to logout?")
+		alert("Do you want to logout?");
 		handleLogout(credentials.username, credentials.password);
 		console.log("Logout");
 	};
@@ -32,9 +32,11 @@ const Navbar = ({ credentials, handleLogout }) => {
 			alignItems: "center",
 			cursor: "pointer",
 			fontSize: "20px",
+			marginLeft: "20px", // Adjust this value to your desired left margin
+			// paddingLeft: "30px", // Additional padding to compensate for the arrow icon
 		},
 		username: {
-			marginLeft: "8px",
+			marginLeft: "80px",
 			color: "rgba(255, 255, 255, 0.8)",
 			borderRadius: "20px",
 			padding: "8px 12px",
@@ -43,12 +45,11 @@ const Navbar = ({ credentials, handleLogout }) => {
 		dropdown: {
 			position: "absolute",
 			top: "100%",
-			left: 0,
 			display: dropdownOpen ? "block" : "none",
 			background: "#333",
 			borderRadius: "8px",
 			padding: "8px",
-			minWidth: "120px",
+			minWidth: "150px",
 			color: "#fff",
 			zIndex: 1,
 		},
@@ -65,14 +66,26 @@ const Navbar = ({ credentials, handleLogout }) => {
 			<div style={styles.usernameContainer} onClick={toggleDropdown}>
 				<div style={styles.username}>
 					{credentials.username}{" "}
-					<span style={{ fontSize: "12px", padding: "5px" }}>▼</span>
+					<span style={{ fontSize: "12px", marginLeft: "10px" }}>▼</span>
 				</div>
 				<div style={styles.dropdown}>
 					<div
 						style={styles.dropdownItem}
-						onClick={() => console.log("Profile")}
+						onClick={() => changePage("profile")}
 					>
 						Profile
+					</div>
+					<div
+						style={styles.dropdownItem}
+						onClick={() => changePage("home")}
+					>
+						Home
+					</div>
+					<div
+						style={styles.dropdownItem}
+						onClick={() => changePage("create")}
+					>
+						Create Post
 					</div>
 					<div style={styles.dropdownItem} onClick={logout}>
 						Logout

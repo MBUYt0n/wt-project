@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import Navbar from './navbar';
 
-const ProfilePage = ({ credentials }) => {
+const ProfilePage = ({ credentials, handleLogout, changePage }) => {
   const [activeTab, setActiveTab] = useState('posts');
   const [formData, setFormData] = useState({
     name: '',
@@ -123,14 +124,14 @@ const ProfilePage = ({ credentials }) => {
   };
 
   return (
-    <div>
-      <style>
-        {`
+		<div>
+			<style>
+				{`
           body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #3494e6, #ec6ead);
+            background: radial-gradient(circle, rgba(245,127,91,1) 38%, rgba(221,83,65,1) 66%);
           }
 
           header {
@@ -203,98 +204,114 @@ const ProfilePage = ({ credentials }) => {
             color: #fff;
           }
         `}
-      </style>
+			</style>
 
-      <header>
-        <h1>Profile Page</h1>
-      </header>
+			<Navbar
+				credentials={credentials}
+				handleLogout={handleLogout}
+				changePage={changePage}
+			/>
 
-      <section>
-        <form>
-          <label htmlFor="name">Name/Username:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="John Doe"
-            value={formData.name}
-            onChange={handleChange}
-          />
+			<section>
+				<form>
+					<label htmlFor="name">Name/Username:</label>
+					<input
+						type="text"
+						id="name"
+						name="name"
+						placeholder="John Doe"
+						value={formData.name}
+						onChange={handleChange}
+					/>
 
-          <label htmlFor="bio">Bio/Description:</label>
-          <textarea
-            id="bio"
-            name="bio"
-            placeholder="A brief description..."
-            rows="4"
-            value={formData.bio}
-            onChange={handleChange}
-          ></textarea>
+					<label htmlFor="bio">Bio/Description:</label>
+					<textarea
+						id="bio"
+						name="bio"
+						placeholder="A brief description..."
+						rows="4"
+						value={formData.bio}
+						onChange={handleChange}
+					></textarea>
 
-          <button type="button" onClick={handleProfileUpdate}>Save Changes</button>
-        </form>
+					<button type="button" onClick={handleProfileUpdate}>
+						Save Changes
+					</button>
+				</form>
 
-        <div className="password-change">
-          <h3>Password Change</h3>
-          <form>
-            <label htmlFor="current-password">Current Password:</label>
-            <input
-              type="password"
-              id="current-password"
-              name="currentPassword"
-              required
-              value={formData.currentPassword}
-              onChange={handleChange}
-            />
+				<div className="password-change">
+					<h3>Password Change</h3>
+					<form>
+						<label htmlFor="current-password">
+							Current Password:
+						</label>
+						<input
+							type="password"
+							id="current-password"
+							name="currentPassword"
+							required
+							value={formData.currentPassword}
+							onChange={handleChange}
+						/>
 
-            <label htmlFor="new-password">New Password:</label>
-            <input
-              type="password"
-              id="new-password"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
+						<label htmlFor="new-password">New Password:</label>
+						<input
+							type="password"
+							id="new-password"
+							name="newPassword"
+							value={formData.newPassword}
+							onChange={handleChange}
+						/>
 
-            <label htmlFor="confirm-new-password">Confirm New Password:</label>
-            <input
-              type="password"
-              id="confirm-new-password"
-              name="confirmNewPassword"
-              value={formData.confirmNewPassword}
-              onChange={handleChange}
-            />
+						<label htmlFor="confirm-new-password">
+							Confirm New Password:
+						</label>
+						<input
+							type="password"
+							id="confirm-new-password"
+							name="confirmNewPassword"
+							value={formData.confirmNewPassword}
+							onChange={handleChange}
+						/>
 
-            <button type="button" onClick={handleChangePassword}>Change Password</button>
-          </form>
-        </div>
+						<button type="button" onClick={handleChangePassword}>
+							Change Password
+						</button>
+					</form>
+				</div>
 
-        <br />
+				<br />
 
-        <div className="tab-container">
-          <div
-            className={`tab ${activeTab === 'posts' && 'active-tab'}`}
-            onClick={() => handleTabClick('posts')}
-          >
-            Posts
-          </div>
-          <div
-            className={`tab ${activeTab === 'comments' && 'active-tab'}`}
-            onClick={() => handleTabClick('comments')}
-          >
-            Comments
-          </div>
-          <div
-            className={`tab ${activeTab === 'liked' && 'active-tab'}`}
-            onClick={() => handleTabClick('liked')}
-          >
-            Liked
-          </div>
-        </div>
+				<div className="tab-container">
+					<div
+						className={`tab ${
+							activeTab === "posts" && "active-tab"
+						}`}
+						onClick={() => handleTabClick("posts")}
+					>
+						Posts
+					</div>
+					<div
+						className={`tab ${
+							activeTab === "comments" && "active-tab"
+						}`}
+						onClick={() => handleTabClick("comments")}
+					>
+						Comments
+					</div>
+					<div
+						className={`tab ${
+							activeTab === "liked" && "active-tab"
+						}`}
+						onClick={() => handleTabClick("liked")}
+					>
+						Liked
+					</div>
+				</div>
 
-        {renderActivityFeed()}
-      </section>
-    </div>
+				{renderActivityFeed()}
+			</section>
+		</div>
   );
 };
 

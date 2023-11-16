@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./navbar";
 
-const RandomRecipes = ({ credentials, handleLogout }) => {
+const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 	const [randomRecipes, setRandomRecipes] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [likeLoading, setLikeLoading] = useState([]);
@@ -231,7 +231,7 @@ const RandomRecipes = ({ credentials, handleLogout }) => {
 
 	return (
 		<div>
-			<Navbar credentials={credentials} handleLogout={handleLogout} />
+			<Navbar credentials={credentials} handleLogout={handleLogout} changePage={changePage} />
 			<div style={styles.container}>
 				<h1 style={{ textAlign: "center", color: "#333" }}>
 					Random Recipes

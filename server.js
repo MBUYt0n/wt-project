@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.json({ limit: "100mb" }));
 
 mongoose.connect(
 	"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
@@ -227,7 +227,7 @@ app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 		user: username,
 		liked: recipeId,
 	});
-	
+
 	if (!hasLiked) {
 		try {
 			// Update likes for the recipe in the specified collection
