@@ -87,45 +87,11 @@ const ProfilePage = ({ credentials }) => {
           console.error('Failed to change password');
           return;
         }
-
-        console.log('Password changed successfully!');
       }
 
       console.log('Profile updated successfully!');
     } catch (error) {
       console.error('Error submitting form:', error);
-    }
-  };
-
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-
-    const { currentPassword, newPassword, confirmNewPassword } = formData;
-
-    try {
-      if (newPassword && confirmNewPassword) {
-        const passwordResponse = await fetch('/api/changePassword', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${credentials.password}`,
-          },
-          body: JSON.stringify({
-            username: credentials.username,
-            currentPassword,
-            newPassword,
-          }),
-        });
-
-        if (!passwordResponse.ok) {
-          console.error('Failed to change password');
-          return;
-        }
-
-        console.log('Password changed successfully!');
-      }
-    } catch (error) {
-      console.error('Error changing password:', error);
     }
   };
 
@@ -242,44 +208,52 @@ const ProfilePage = ({ credentials }) => {
             onChange={handleChange}
           ></textarea>
 
+          <label htmlFor="current-password">Current Password:</label>
+          <input
+            type="password"
+            id="current-password"
+            name="currentPassword"
+            required
+            value={formData.currentPassword}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="new-password">New Password:</label>
+          <input
+            type="password"
+            id="new-password"
+            name="newPassword"
+            value={formData.newPassword}
+            onChange={handleChange}
+          />
+
+          <label htmlFor="confirm-new-password">Confirm New Password:</label>
+          <input
+            type="password"
+            id="confirm-new-password"
+            name="confirmNewPassword"
+            value={formData.confirmNewPassword}
+            onChange={handleChange}
+          />
+
           <button type="submit">Save Changes</button>
         </form>
-
         <div className="password-change">
           <h3>Password Change</h3>
-          <form onSubmit={handlePasswordChange}>
+          <form>
             <label htmlFor="current-password">Current Password:</label>
-            <input
-              type="password"
-              id="current-password"
-              name="currentPassword"
-              required
-              value={formData.currentPassword}
-              onChange={handleChange}
-            />
+            <input type="password" id="current-password" name="currentPassword" required onChange={handleChange} />
 
             <label htmlFor="new-password">New Password:</label>
-            <input
-              type="password"
-              id="new-password"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
+            <input type="password" id="new-password" name="newPassword" required onChange={handleChange} />
 
             <label htmlFor="confirm-new-password">Confirm New Password:</label>
-            <input
-              type="password"
-              id="confirm-new-password"
-              name="confirmNewPassword"
-              value={formData.confirmNewPassword}
-              onChange={handleChange}
-            />
+            <input type="password" id="confirm-new-password" name="confirmNewPassword" required onChange={handleChange} />
 
             <button type="submit">Change Password</button>
           </form>
         </div>
-
+         <br/>
         <div className="tab-container">
           <div
             className={`tab ${activeTab === 'posts' && 'active-tab'}`}
@@ -301,7 +275,23 @@ const ProfilePage = ({ credentials }) => {
           </div>
         </div>
 
-        {/* Additional code for posts, comments, and liked sections */}
+        {activeTab === 'posts' && (
+          <div className="activity-feed">
+            <h3>Posts</h3>
+          </div>
+        )}
+
+        {activeTab === 'comments' && (
+          <div className="activity-feed">
+            <h3>Comments</h3>
+          </div>
+        )}
+
+        {activeTab === 'liked' && (
+          <div className="activity-feed">
+            <h3>Liked</h3>
+          </div>
+        )}
       </section>
     </div>
   );
