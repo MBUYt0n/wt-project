@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,9 @@ mongoose.connect(
     useUnifiedTopology: true,
   }
 );
+
+// Middleware to authenticate requests with a JWT token
+app.use(authenticateToken);
 
 app.get("/api/recipe", async (req, res) => {
   try {
@@ -66,7 +70,9 @@ app.post("/api/login", async (req, res) => {
     });
 
     if (user) {
-      res.status(200).json({ message: "Login successful!" });
+      // Generate JWT token and send it in the response
+      const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.status(200).json({ message: "Login successful!", token: token });
     } else {
       res.status(401).json({ error: "Invalid credentials" });
     }
@@ -209,6 +215,18 @@ app.post('/saveContent', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Middleware function to authenticate JWT tokens
+function authenticateToken(req, res, next) {
+  const token = req.header("Authorization");
+  if (!token) return res.status(401).json({ error: "Access denied" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: "Invalid token" });
+    req.user = user;
+    next();
+  });
+}
 
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");
