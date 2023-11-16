@@ -13,7 +13,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 			console.log("Loading more recipes...");
 			if (!loading) {
 				setLoading(true);
-				console.log(credentials.username, credentials.password);
 				fetch("http://localhost:5000/api/recipe", {
 					headers: {
 						username: credentials.username,
@@ -22,7 +21,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 				})
 					.then((response) => response.json())
 					.then((data) => {
-						console.log(data);
 						setRandomRecipes((prevRecipes) => [
 							...prevRecipes,
 							...data,

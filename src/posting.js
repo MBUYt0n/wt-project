@@ -102,7 +102,7 @@ const RichTextEditor = ({
 		if (file) {
 			try {
 				const base64 = await convertToBase64(file);
-				setImage(base64); // Set the image state with base64 data
+				setImage(base64);
 			} catch (error) {
 				console.error("Error converting file to base64:", error);
 			}
@@ -111,22 +111,17 @@ const RichTextEditor = ({
 
 	const handlePost = async () => {
 		try {
-			const currentDate = new Date();
-			const username = "YourUsername";
-			const likes = 0;
-
+			const username = credentials.username;
 			await fetch("http://localhost:5000/saveContent", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					title,
-					content,
-					image,
-					date: currentDate,
-					username,
-					likes,
+					title:title,
+					content:content,
+					image:image,
+					username:username,
 				}),
 			});
 

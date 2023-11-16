@@ -7,8 +7,8 @@ const bcrypt = require("bcrypt");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({ limit: "100mb" }));
+app.use(bodyParser.urlencoded({ extended: false, limit: "15mb" }));
+app.use(bodyParser.json({ limit: "15mb" }));
 
 mongoose.connect(
 	"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
@@ -171,36 +171,25 @@ app.post("/api/changePassword", async (req, res) => {
 });
 
 app.post("/api/saveContent", async (req, res) => {
-	const { title, content, image, date, username, likes } = req.body;
-	if (!title || !content || !date || !username) {
-		return res
-			.status(400)
-			.json({
-				message:
-					"Title, content, date, and username are required fields.",
-			});
+	const { title, content, image, username } = req.body;
+	if (!title || !content || !username) {
+		return res.status(400).json({
+			message: "Title, content, date, and username are required fields.",
+		});
 	}
 	try {
 		const collectionName = username;
 
 		// Check if collection exists, create if it doesn't
-		const collectionExists = await mongoose.connection.db
-			.listCollections({ name: collectionName })
-			.hasNext();
-		if (!collectionExists) {
-			await mongoose.connection.db.createCollection(collectionName);
-			console.log("Created new collection");
-		}
 		const collection = mongoose.connection.db.collection(collectionName);
 		const newContent = {
 			title: title,
-			content: content,
+			body: content,
 			image: image,
-			date: new Date(date),
 			username: username,
-			likes: likes || 0,
+			likes: 0,
 		};
-
+		console.log(newContent)
 		console.log("Received POST request data:", req.body);
 		await collection.insertOne(newContent);
 		console.log("Inserted data into collection");
