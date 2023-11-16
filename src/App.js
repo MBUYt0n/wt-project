@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import RandomRecipes from "./randomrecipes";
 import Login from "./login";
-import RegisterPage from "./register"; // Adjust the path accordingly
+import RegisterPage from "./register";
+import ProfilePage from "./profile"; 
 
 const App = () => {
 	const [isLoggedIn, setLoggedIn] = useState(false);
@@ -16,11 +17,11 @@ const App = () => {
 	const handleRegisterSuccess = (username, password) => {
 		console.log("Registration successful!");
 		setLoggedIn(true);
-		setCredentials({ username, password }); // After successful registration, switch back to login
+		setCredentials({ username, password });
 		setShowRegister(false);
 	};
 
-	const handleLogout = (username, password) => {
+	const handleLogout = () => {
 		setLoggedIn(false);
 		setCredentials({ username: "", password: "" });
 	};
@@ -28,26 +29,22 @@ const App = () => {
 	return (
 		<div>
 			{isLoggedIn ? (
-				<RandomRecipes
+				<ProfilePage
 					credentials={credentials}
 					handleLogout={handleLogout}
 				/>
 			) : (
 				<div>
 					{showRegister ? (
-						<div>
-							<RegisterPage
-								onRegisterSuccess={handleRegisterSuccess}
-								setShowRegister={setShowRegister}
-							/>
-						</div>
+						<RegisterPage
+							onRegisterSuccess={handleRegisterSuccess}
+							setShowRegister={setShowRegister}
+						/>
 					) : (
-						<div>
-							<Login
-								onLoginSuccess={handleLoginSuccess}
-								setShowRegister={setShowRegister}
-							/>
-						</div>
+						<Login
+							onLoginSuccess={handleLoginSuccess}
+							setShowRegister={setShowRegister}
+						/>
 					)}
 				</div>
 			)}
