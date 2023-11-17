@@ -108,8 +108,7 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 	const handleComment = (index, clickEvent) => {
 		clickEvent.stopPropagation();
 		setCommentingIndex(index);
-		// Fetch comments for the recipe at index here if needed
-		// fetchCommentsForRecipe(randomRecipes[index]._id);
+
 	};
 
 	const handlePostComment = async (index, title, collection) => {
@@ -137,7 +136,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 				);
 
 				if (response.ok) {
-					// fetchCommentsForRecipe(randomRecipes[index]._id);
 					setCommentText("");
 					setCommentingIndex(null);
 				} else {
@@ -254,6 +252,25 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 		}
 	};
 
+	const renderRecipeComments = (comments) => {
+		if (comments.length === 0) {
+			return <div>No comments yet</div>;
+		}
+
+		return (
+			<div>
+				{comments.map((comment, commentIndex) => (
+					<div key={commentIndex}>
+						<p>
+							<b>{comment.user}</b>
+							: {comment.text}
+						</p>
+					</div>
+				))}
+			</div>
+		);
+	};
+
 	return (
 		<div>
 			<Navbar
@@ -326,6 +343,10 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 							<div style={styles.title}>{recipe.title}</div>
 							{renderRecipeBody(recipe.body, recipe.expanded)}
 							<div style={styles.smallerText}>{recipe.year}</div>
+							<div>
+								<h6>Comments:</h6>
+								{renderRecipeComments(recipe.comments)}
+							</div>
 							{/* Comment box */}
 							{commentingIndex === index && (
 								<div>
