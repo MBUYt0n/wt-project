@@ -7,6 +7,7 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 	const [likeLoading, setLikeLoading] = useState([]);
 	const [commentText, setCommentText] = useState("");
 	const [commentingIndex, setCommentingIndex] = useState(null);
+	// const [comments, setComments] = useState([]);
 
 	useEffect(() => {
 		const loadMoreRecipes = async () => {
@@ -104,23 +105,47 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 		}
 	};
 
-	const handleComment = (index, clickEvent) => {
-		clickEvent.stopPropagation();
-		setCommentingIndex(index);
-	};
+	 const handleComment = (index, clickEvent) => {
+			clickEvent.stopPropagation();
+			setCommentingIndex(index);
+			// Fetch comments for the recipe at index here if needed
+			// fetchCommentsForRecipe(randomRecipes[index]._id);
+		};
 
-	const handlePostComment = async (index) => {
-		console.log(
-			`Posting comment for recipe at index ${index}: ${commentText}`
-		);
+	
+  const handlePostComment = async (index) => {
+		try {
+			console.log(
+				`Posting comment for recipe at index ${index}: ${commentText}`
+			);
 
-		// Perform the logic to post the comment to the server
-		// ...
+			// Make a POST request to your API to add a new comment for the recipe
+			const response = await fetch(
+				`http://localhost:5000/api/recipe/comment/${randomRecipes[index]._id}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						username: credentials.username,
+					},
+					body: JSON.stringify({
+						username: credentials.username,
+						text: commentText,
+					}),
+				}
+			);
 
-		// Clear the comment text and reset the commentingIndex
-		setCommentText("");
-		setCommentingIndex(null);
-	};
+			if (response.ok) {
+				// fetchCommentsForRecipe(randomRecipes[index]._id);
+				setCommentText("");
+				setCommentingIndex(null);
+			} else {
+				console.error("Failed to post comment");
+			}
+		} catch (error) {
+			console.error("Error:", error);
+		}
+  };
 
 	const styles = {
 		container: {
@@ -299,7 +324,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 							<div style={styles.title}>{recipe.title}</div>
 							{renderRecipeBody(recipe.body, recipe.expanded)}
 							<div style={styles.smallerText}>{recipe.year}</div>
-
 							{/* Comment box */}
 							{commentingIndex === index && (
 								<div>

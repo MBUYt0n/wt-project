@@ -242,6 +242,33 @@ async function updateLikedCollection(username, recipeId) {
 		.updateOne({ user: username }, { $addToSet: { liked: recipeId } });
 }
 
+app.post("/api/recipe/comment/:id", async (req, res) => {
+	const recipeId = req.params.id;
+	const { username, text } = req.body;
+
+	if (!username || !text) {
+		return res.status(400).json({
+			message: "Username and comment text are required fields.",
+		});
+	}
+
+	try {
+		const commentsCollection =
+			mongoose.connection.db.collection("comments");
+
+		await commentsCollection.insertOne({
+			recipeId: recipeId,
+			username: username,
+			text: text,
+		});
+
+		res.status(201).json({ message: "Comment posted successfully!" });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+
 app.listen(5000, () => {
 	console.log("Server is running on http://localhost:5000");
 });
