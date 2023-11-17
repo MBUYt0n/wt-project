@@ -118,10 +118,10 @@ const RichTextEditor = ({
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					title:title,
-					content:content,
-					image:image,
-					username:username,
+					title: title,
+					content: content,
+					image: image,
+					username: username,
 				}),
 			});
 
@@ -209,7 +209,7 @@ const RichTextEditor = ({
 							<button
 								className="btn btn-success"
 								onClick={handlePost}
-                style={button}
+								style={button}
 							>
 								{postButtonText}
 							</button>

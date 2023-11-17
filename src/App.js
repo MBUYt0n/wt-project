@@ -40,10 +40,10 @@ const App = () => {
 		}));
 	};
 
-  const changePage = (page) => {
-    setDisplayPage(page);
-  }
-  console.log(displayPage)
+	const changePage = (page) => {
+		setDisplayPage(page);
+	};
+	console.log(displayPage);
 
 	return (
 		<div>
@@ -58,8 +58,8 @@ const App = () => {
 					<ProfilePage
 						credentials={credentials}
 						handleChangePassword={handleChangePassword}
-            handleLogout={handleLogout}
-            changePage={changePage}
+						handleLogout={handleLogout}
+						changePage={changePage}
 					/>
 				) : (
 					<RichTextEditor

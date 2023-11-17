@@ -229,7 +229,11 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 
 	return (
 		<div>
-			<Navbar credentials={credentials} handleLogout={handleLogout} changePage={changePage} />
+			<Navbar
+				credentials={credentials}
+				handleLogout={handleLogout}
+				changePage={changePage}
+			/>
 			<div style={styles.container}>
 				<h1 style={{ textAlign: "center", color: "#333" }}>
 					Random Recipes
@@ -275,17 +279,22 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 						</div>
 
 						<div style={styles.rightContent}>
-							<div style={recipe.expanded ? styles.expandedImageContainer : {}}>
-							<img
-								src={recipe.image}
+							<div
 								style={
 									recipe.expanded
-										? styles.expandedImage
-										: 
-									styles.image
+										? styles.expandedImageContainer
+										: {}
 								}
-								alt={recipe.title}
-							/>
+							>
+								<img
+									src={recipe.image}
+									style={
+										recipe.expanded
+											? styles.expandedImage
+											: styles.image
+									}
+									alt={recipe.title}
+								/>
 							</div>
 							<div style={styles.title}>{recipe.title}</div>
 							{renderRecipeBody(recipe.body, recipe.expanded)}
