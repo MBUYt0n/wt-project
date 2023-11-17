@@ -92,7 +92,7 @@ app.post("/api/register", async (req, res) => {
 		if (existingUser) {
 			return res.status(409).json({ error: "Username already exists" });
 		}
-
+        console.log(username, password);
 		await mongoose.connection.db.collection("credentials").insertOne({
 			username: username,
 			password: password,

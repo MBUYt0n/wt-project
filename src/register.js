@@ -5,6 +5,7 @@ const RegisterPage = ({ onRegisterSuccess, setShowRegister }) => {
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [errorDisp, setErrorDisp] = useState(false);
 
 	const handleRegister = async (e) => {
 		e.preventDefault();
@@ -25,8 +26,9 @@ const RegisterPage = ({ onRegisterSuccess, setShowRegister }) => {
 			if (response.ok) {
 				console.log("Registration successful!");
 				onRegisterSuccess(username, password);
-				// You can redirect the user to the login page or perform other actions after successful registration
+				
 			} else {
+			    setErrorDisp(true);
 				console.error("Registration failed:", response.statusText);
 			}
 		} catch (error) {
@@ -115,7 +117,13 @@ const RegisterPage = ({ onRegisterSuccess, setShowRegister }) => {
 					onChange={(e) => setPassword(e.target.value)}
 					required
 				/>
-
+                <div> 
+                {errorDisp ? 
+                    (<label style={{ color: "red" }}>
+                                Username not available, use a different one
+						</label>
+					) : null}
+				</div>
 				<button
 					type="button"
 					style={styles.buttonStyles}
