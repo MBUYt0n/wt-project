@@ -112,7 +112,7 @@ const RichTextEditor = ({
 	const handlePost = async () => {
 		try {
 			const username = credentials.username;
-			await fetch("http://localhost:5000/saveContent", {
+			await fetch("http://localhost:5000/api/saveContent", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
