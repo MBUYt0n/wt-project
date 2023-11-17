@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./navbar";
 
 const ProfilePage = ({ credentials, handleLogout, changePage }) => {
@@ -10,6 +10,8 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 		newPassword: "",
 		confirmNewPassword: "",
 	});
+	const [userRecipes, setUserRecipes] = useState([]); 
+	const [userComments, setUserComments] = useState({})
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -81,8 +83,90 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 		}
 	};
 
+	const fetchUserRecipes = async () => {
+		try {
+			const response = await fetch(
+				`http://localhost:5000/api/userRecipes?username=${credentials.username}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+
+			if (response.ok) {
+				const data = await response.json();
+				setUserRecipes(data.recipes); // Assuming the response has a "recipes" array
+			} else {
+				console.error("Failed to fetch user's recipes");
+			}
+		} catch (error) {
+			console.error("Error fetching user's recipes:", error);
+		}
+	};
+
+	const fetchUserComments = async () => {
+		try {
+			const response = await fetch(
+				`http://localhost:5000/api/userComments?username=${credentials.username}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setUserComments(data.comments)
+			} else {
+				console.error("failed to fetch user's comments");
+			}
+		} catch (error) {
+			console.error("Error fetching user's comments:", error);
+		}
+	};
+
+	useEffect(() => {
+		fetchUserRecipes();
+		fetchUserComments()
+	});
+
 	const handleTabClick = (tab) => {
 		setActiveTab(tab);
+	};
+
+	const renderPosts = () => {
+		return (
+			<div className="activity-feed">
+				{userRecipes.map((recipe) => (
+					<div key={recipe.id}>
+						<p>
+							<b>Title: {recipe.title}</b>
+							<br /> Likes: {recipe.likes}
+						</p>
+						{/* Display other relevant recipe information */}
+					</div>
+				))}
+			</div>
+		);
+	};
+
+	const renderComments = () => {
+		return (
+			<div className="activity-feed">
+				{userComments.map((comment) => (
+					<div key={comment.id}>
+						<p>
+							<b>Title: {comment.title}</b>
+							<br /> Text : {comment.comment}
+						</p>
+						{/* Display other relevant recipe information */}
+					</div>
+				))}
+			</div>
+		);
 	};
 
 	const renderActivityFeed = () => {
@@ -92,12 +176,14 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 				return (
 					<div className="activity-feed">
 						<h3>Posts</h3>
+						{renderPosts()}
 					</div>
 				);
 			case "comments":
 				return (
 					<div className="activity-feed">
 						<h3>Comments</h3>
+						{renderComments()}
 					</div>
 				);
 			case "liked":

@@ -9,7 +9,7 @@ const Navbar = ({ credentials, handleLogout, changePage }) => {
 
 	const logout = () => {
 		alert("Do you want to logout?");
-		handleLogout(credentials.username, credentials.password);
+		handleLogout();
 		console.log("Logout");
 	};
 

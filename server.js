@@ -281,6 +281,33 @@ app.post("/api/recipe/comment/:id", async (req, res) => {
 	}
 });
 
+app.get("/api/userRecipes", async (req, res) => {
+	const { username } = req.query;
+	try {
+		const all = await getRecipes(username);
+		res.json({ recipes: all });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Internal Server Error" });
+	}
+});
+
+app.get("/api/userComments", async (req, res) => {
+	const { username } = req.query;
+	try {
+		const commentsCollection = await mongoose.connection.db.collection(
+			"comments"
+		);
+		const all = await commentsCollection.findOne({
+			user: username,
+		});
+		res.json({ comments: all.comments });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Internal Server Error" });
+	}
+});
+
 app.listen(5000, () => {
 	console.log("Server is running on http://localhost:5000");
 });

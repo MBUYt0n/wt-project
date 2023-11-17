@@ -30,6 +30,7 @@ const App = () => {
 	const handleLogout = () => {
 		setLoggedIn(false);
 		setCredentials({ username: "", password: "" });
+		setDisplayPage("home");
 	};
 
 	// Callback for password change
