@@ -26,7 +26,9 @@ app.get("/api/recipe", async (req, res) => {
 
 		const validCollections = collections.filter((collection) => {
 			return (
-				collection.name !== "credentials" && collection.name !== "liked"
+				collection.name !== "credentials" &&
+				collection.name !== "liked" &&
+				collection.name !== "comments"
 			);
 		});
 
@@ -92,7 +94,7 @@ app.post("/api/register", async (req, res) => {
 		if (existingUser) {
 			return res.status(409).json({ error: "Username already exists" });
 		}
-        console.log(username, password);
+		console.log(username, password);
 		await mongoose.connection.db.collection("credentials").insertOne({
 			username: username,
 			password: password,
@@ -103,6 +105,11 @@ app.post("/api/register", async (req, res) => {
 		await mongoose.connection.db.collection("liked").insertOne({
 			user: username,
 			liked: [],
+		});
+
+		await mongoose.connection.db.collection("comments").insertOne({
+			user: username,
+			comments: [],
 		});
 
 		res.status(201).json({ message: "Registration successful!" });
@@ -145,7 +152,7 @@ app.post("/api/changePassword", async (req, res) => {
 			return res.status(401).json({ error: "User not found" });
 		}
 
-		const isPasswordValid = user.password === currentPassword
+		const isPasswordValid = user.password === currentPassword;
 
 		if (!isPasswordValid) {
 			return res
@@ -180,8 +187,9 @@ app.post("/api/saveContent", async (req, res) => {
 			title: title,
 			body: content,
 			image: image,
-			username: username,
+			collection: username,
 			likes: 0,
+			comments: [],
 		};
 		console.log("Received POST request data:", req.body);
 		await collection.insertOne(newContent);
@@ -243,24 +251,28 @@ async function updateLikedCollection(username, recipeId) {
 }
 
 app.post("/api/recipe/comment/:id", async (req, res) => {
-	const recipeId = req.params.id;
-	const { username, text } = req.body;
+	const { username, text, title, collection } = req.body;
 
 	if (!username || !text) {
 		return res.status(400).json({
 			message: "Username and comment text are required fields.",
 		});
 	}
-
+	console.log(username, text, title, collection);
 	try {
 		const commentsCollection =
 			mongoose.connection.db.collection("comments");
 
-		await commentsCollection.insertOne({
-			recipeId: recipeId,
-			username: username,
-			text: text,
-		});
+		await commentsCollection.updateOne(
+			{ user: username },
+			{ $push: { comments: { title: title, comment: text } } }
+		);
+
+		const userCollection = mongoose.connection.db.collection(collection);
+		await userCollection.updateOne(
+			{ title: title },
+			{ $push: { comments: { user: username, text: text } } }
+		);
 
 		res.status(201).json({ message: "Comment posted successfully!" });
 	} catch (error) {

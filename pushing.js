@@ -347,7 +347,7 @@
 
 const mongoose = require("mongoose");
 
-async function fetchData(username, recipeId) {
+async function fetchData(username, title, text) {
 	try {
 		await mongoose.connect(
 			"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
@@ -371,15 +371,21 @@ async function fetchData(username, recipeId) {
 		// 	console.log("nope");
 		// }
 
+		// const hasLiked = await mongoose.connection.db
+		// 	.collection("liked")
+		// 	.findOne({
+		// 		user: username,
+		// 		liked:recipeId
+		// 	});
+		// 	console.log(hasLiked)
+		// // Close the connection after fetching data
 
-		const hasLiked = await mongoose.connection.db
-			.collection("liked")
-			.findOne({
-				user: username,
-				liked:recipeId
-			});
-			console.log(hasLiked)
-		// Close the connection after fetching data
+		const userCollection = mongoose.connection.db.collection(username);
+		await userCollection.updateOne(
+			{ title: title },
+			{ $push: { comments: { user: username, text: text } } }
+		);
+		console.log("inserted");
 		await mongoose.connection.close();
 	} catch (error) {
 		console.error(error);
@@ -387,4 +393,4 @@ async function fetchData(username, recipeId) {
 }
 
 // Call the fetchData function
-fetchData("hello123", "654ce1e50f6f7a2fba8bcf60");
+fetchData("hello123", "Donuts", "nice one");

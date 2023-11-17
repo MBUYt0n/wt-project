@@ -105,47 +105,49 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 		}
 	};
 
-	 const handleComment = (index, clickEvent) => {
-			clickEvent.stopPropagation();
-			setCommentingIndex(index);
-			// Fetch comments for the recipe at index here if needed
-			// fetchCommentsForRecipe(randomRecipes[index]._id);
-		};
+	const handleComment = (index, clickEvent) => {
+		clickEvent.stopPropagation();
+		setCommentingIndex(index);
+		// Fetch comments for the recipe at index here if needed
+		// fetchCommentsForRecipe(randomRecipes[index]._id);
+	};
 
-	
-  const handlePostComment = async (index) => {
+	const handlePostComment = async (index, title, collection) => {
 		try {
 			console.log(
 				`Posting comment for recipe at index ${index}: ${commentText}`
 			);
 
-			// Make a POST request to your API to add a new comment for the recipe
-			const response = await fetch(
-				`http://localhost:5000/api/recipe/comment/${randomRecipes[index]._id}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						username: credentials.username,
-					},
-					body: JSON.stringify({
-						username: credentials.username,
-						text: commentText,
-					}),
-				}
-			);
+			if (collection !== credentials.username) {
+				const response = await fetch(
+					`http://localhost:5000/api/recipe/comment/${randomRecipes[index]._id}`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							username: credentials.username,
+						},
+						body: JSON.stringify({
+							username: credentials.username,
+							text: commentText,
+							title: title,
+							collection: collection,
+						}),
+					}
+				);
 
-			if (response.ok) {
-				// fetchCommentsForRecipe(randomRecipes[index]._id);
-				setCommentText("");
-				setCommentingIndex(null);
-			} else {
-				console.error("Failed to post comment");
-			}
+				if (response.ok) {
+					// fetchCommentsForRecipe(randomRecipes[index]._id);
+					setCommentText("");
+					setCommentingIndex(null);
+				} else {
+					console.error("Failed to post comment");
+				}
+			} else console.log("Can't comment on your own post");
 		} catch (error) {
 			console.error("Error:", error);
 		}
-  };
+	};
 
 	const styles = {
 		container: {
@@ -337,7 +339,13 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 										}
 									/>
 									<button
-										onClick={() => handlePostComment(index)}
+										onClick={() =>
+											handlePostComment(
+												index,
+												recipe.title,
+												recipe.collection
+											)
+										}
 									>
 										Post Comment
 									</button>

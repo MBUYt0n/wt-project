@@ -62,7 +62,7 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 		button: {
 			background: isButtonHovered
 				? "linear-gradient(to right, #4caf50, #45a049)"
-				: "linear-gradient(to right, #45a049, #4caf50)",
+				: "linear-gradient(to right, #4caf50, #45a049)",
 			color: "#fff",
 			padding: "12px 20px",
 			border: "none",
@@ -97,11 +97,16 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 				<br />
 				<div>
 					{errorDisp ? (
-						<label style={{ color: "red" }}>
-							{errorDisp === 401 ? "Wrong Password, please try again" : "Please enter username and password"}
-						</label>
+						<div>
+							<label style={{ color: "red" }}>
+								{errorDisp === 401
+									? "Wrong Password, please try again"
+									: "Please enter username and password"}
+							</label>
+							<br />
+							<br />
+						</div>
 					) : null}
-					<br /><br />
 				</div>
 				<button
 					type="button"
