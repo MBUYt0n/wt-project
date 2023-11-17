@@ -145,10 +145,7 @@ app.post("/api/changePassword", async (req, res) => {
 			return res.status(401).json({ error: "User not found" });
 		}
 
-		const isPasswordValid = await bcrypt.compare(
-			currentPassword,
-			user.password
-		);
+		const isPasswordValid = user.password === currentPassword
 
 		if (!isPasswordValid) {
 			return res
@@ -156,11 +153,9 @@ app.post("/api/changePassword", async (req, res) => {
 				.json({ error: "Incorrect current password" });
 		}
 
-		const hashedPassword = await bcrypt.hash(newPassword, 10);
-
 		await credentialsCollection.updateOne(
 			{ username: username },
-			{ $set: { password: hashedPassword } }
+			{ $set: { password: newPassword } }
 		);
 
 		res.status(200).json({ message: "Password changed successfully!" });

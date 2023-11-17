@@ -1,129 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from './navbar';
+import React, { useState } from "react";
+import Navbar from "./navbar";
 
 const ProfilePage = ({ credentials, handleLogout, changePage }) => {
-  const [activeTab, setActiveTab] = useState('posts');
-  const [formData, setFormData] = useState({
-    name: '',
-    bio: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
-  });
+	const [activeTab, setActiveTab] = useState("posts");
+	const [formData, setFormData] = useState({
+		name: "",
+		bio: "",
+		currentPassword: "",
+		newPassword: "",
+		confirmNewPassword: "",
+	});
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await fetch(`/api/profile/${credentials.username}`, {
-          headers: {
-            Authorization: `Bearer ${credentials.password}`,
-          },
-        });
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setFormData((prevData) => ({
+			...prevData,
+			[name]: value,
+		}));
+	};
 
-        if (response.ok) {
-          const data = await response.json();
-          setFormData({
-            name: data.name || '',
-            bio: data.bio || '',
-            currentPassword: '',
-            newPassword: '',
-            confirmNewPassword: '',
-          });
-        } else {
-          console.error('Failed to fetch profile data');
-        }
-      } catch (error) {
-        console.error('Error fetching profile data:', error);
-      }
-    };
+	const handleProfileUpdate = async () => {
+		try {
+			const response = await fetch("localhost:5000/api/updateProfile", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${credentials.password}`,
+				},
+				body: JSON.stringify({
+					username: credentials.username,
+					name: formData.name,
+					bio: formData.bio,
+				}),
+			});
 
-    fetchProfileData();
-  }, [credentials]);
+			if (response.ok) {
+				console.log("Profile updated successfully!");
+			} else {
+				console.error("Failed to update profile");
+			}
+		} catch (error) {
+			console.error("Error updating profile:", error);
+		}
+	};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+	const handleChangePassword = async () => {
+		const { currentPassword, newPassword, confirmNewPassword } = formData;
 
-  const handleProfileUpdate = async () => {
-    try {
-      const response = await fetch('/api/updateProfile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${credentials.password}`,
-        },
-        body: JSON.stringify({
-          username: credentials.username,
-          name: formData.name,
-          bio: formData.bio,
-        }),
-      });
+		if (newPassword !== confirmNewPassword) {
+			console.error("New passwords do not match");
+			return;
+		}
 
-      if (response.ok) {
-        console.log('Profile updated successfully!');
-      } else {
-        console.error('Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    }
-  };
+		try {
+			const response = await fetch(
+				"http://localhost:5000/api/changePassword",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						username: credentials.username,
+						currentPassword: currentPassword,
+						newPassword: newPassword,
+					}),
+				}
+			);
 
-  const handleChangePassword = async () => {
-    const { currentPassword, newPassword, confirmNewPassword } = formData;
+			if (response.ok) {
+				console.log("Password changed successfully!");
+				alert("You wil be logged out");
+				handleLogout();
+				changePage("home");
+			} else {
+				console.error("Failed to change password");
+			}
+		} catch (error) {
+			console.error("Error changing password:", error);
+		}
+	};
 
-    if (newPassword !== confirmNewPassword) {
-      console.error('New passwords do not match');
-      return;
-    }
+	const handleTabClick = (tab) => {
+		setActiveTab(tab);
+	};
 
-    try {
-      const response = await fetch('/api/changePassword', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${credentials.password}`,
-        },
-        body: JSON.stringify({
-          username: credentials.username,
-          currentPassword,
-          newPassword,
-        }),
-      });
+	const renderActivityFeed = () => {
+		// You can implement fetching and displaying posts, comments, and liked items here
+		switch (activeTab) {
+			case "posts":
+				return (
+					<div className="activity-feed">
+						<h3>Posts</h3>
+					</div>
+				);
+			case "comments":
+				return (
+					<div className="activity-feed">
+						<h3>Comments</h3>
+					</div>
+				);
+			case "liked":
+				return (
+					<div className="activity-feed">
+						<h3>Liked</h3>
+					</div>
+				);
+			default:
+				return null;
+		}
+	};
 
-      if (response.ok) {
-        console.log('Password changed successfully!');
-      } else {
-        console.error('Failed to change password');
-      }
-    } catch (error) {
-      console.error('Error changing password:', error);
-    }
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const renderActivityFeed = () => {
-    // You can implement fetching and displaying posts, comments, and liked items here
-    switch (activeTab) {
-      case 'posts':
-        return <div className="activity-feed"><h3>Posts</h3></div>;
-      case 'comments':
-        return <div className="activity-feed"><h3>Comments</h3></div>;
-      case 'liked':
-        return <div className="activity-feed"><h3>Liked</h3></div>;
-      default:
-        return null;
-    }
-  };
-
-  return (
+	return (
 		<div>
 			<style>
 				{`
@@ -312,7 +300,7 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 				{renderActivityFeed()}
 			</section>
 		</div>
-  );
+	);
 };
 
 export default ProfilePage;
