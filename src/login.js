@@ -4,7 +4,7 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 	const [isButtonHovered, setButtonHovered] = useState(false);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const [errorDisp, setErrorDisp] = useState(false);
+	const [errorDisp, setErrorDisp] = useState(0);
 
 	const handleLogin = async () => {
 		try {
@@ -24,7 +24,7 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 			console.log(responseData.message);
 			if (response.ok) onLoginSuccess(username, password);
 			else {
-				setErrorDisp(true);
+				setErrorDisp(response.status);
 				console.error("Login failed bozo", responseData.message);
 			}
 		} catch (error) {
@@ -98,9 +98,10 @@ const Login = ({ onLoginSuccess, setShowRegister }) => {
 				<div>
 					{errorDisp ? (
 						<label style={{ color: "red" }}>
-							Wrong Password, please try again
+							{errorDisp === 401 ? "Wrong Password, please try again" : "Please enter username and password"}
 						</label>
 					) : null}
+					<br /><br />
 				</div>
 				<button
 					type="button"
