@@ -177,7 +177,6 @@ app.post("/api/saveContent", async (req, res) => {
 			message: "Title, content, date, and username are required fields.",
 		});
 	}
-	console.log(title, content, image, username);
 	try {
 		const collectionName = username;
 
@@ -189,7 +188,6 @@ app.post("/api/saveContent", async (req, res) => {
 			username: username,
 			likes: 0,
 		};
-		console.log(newContent);
 		console.log("Received POST request data:", req.body);
 		await collection.insertOne(newContent);
 		console.log("Inserted data into collection");
