@@ -380,12 +380,11 @@ async function fetchData(username, title, text) {
 		// 	console.log(hasLiked)
 		// // Close the connection after fetching data
 
-		const userCollection = mongoose.connection.db.collection(username);
-		await userCollection.updateOne(
-			{ title: title },
-			{ $push: { comments: { user: username, text: text } } }
+		const userCollection = mongoose.connection.db.collection("liked");
+		const a = await userCollection.findOne(
+			{ user: username },
 		);
-		console.log("inserted");
+		console.log(a);
 		await mongoose.connection.close();
 	} catch (error) {
 		console.error(error);

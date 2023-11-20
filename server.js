@@ -311,13 +311,14 @@ app.get("/api/userComments", async (req, res) => {
 app.get("/api/userLiked", async (req, res) => {
 	const { username } = req.query;
 	try {
-		const commentsCollection = await mongoose.connection.db.collection(
+		const likesCollection = await mongoose.connection.db.collection(
 			"liked"
 		);
-		const all = await commentsCollection.findOne({
+		const all = await likesCollection.findOne({
 			user: username,
 		});
-		res.json({ likes: all.liked });
+		const liked = all.liked
+		res.json({ liked:liked });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Internal Server Error" });
