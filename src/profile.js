@@ -5,13 +5,13 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 	const [activeTab, setActiveTab] = useState("posts");
 	const [formData, setFormData] = useState({
 		name: "",
-		bio: "",
 		currentPassword: "",
 		newPassword: "",
 		confirmNewPassword: "",
 	});
-	const [userRecipes, setUserRecipes] = useState([]); 
-	const [userComments, setUserComments] = useState({})
+	const [userRecipes, setUserRecipes] = useState([]);
+	const [userComments, setUserComments] = useState({});
+	const [userLikes, setUserLikes] = useState({});
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -19,31 +19,6 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 			...prevData,
 			[name]: value,
 		}));
-	};
-
-	const handleProfileUpdate = async () => {
-		try {
-			const response = await fetch("localhost:5000/api/updateProfile", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${credentials.password}`,
-				},
-				body: JSON.stringify({
-					username: credentials.username,
-					name: formData.name,
-					bio: formData.bio,
-				}),
-			});
-
-			if (response.ok) {
-				console.log("Profile updated successfully!");
-			} else {
-				console.error("Failed to update profile");
-			}
-		} catch (error) {
-			console.error("Error updating profile:", error);
-		}
 	};
 
 	const handleChangePassword = async () => {
@@ -119,7 +94,7 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 			);
 			if (response.ok) {
 				const data = await response.json();
-				setUserComments(data.comments)
+				setUserComments(data.comments);
 			} else {
 				console.error("failed to fetch user's comments");
 			}
@@ -128,9 +103,33 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 		}
 	};
 
+	const fetchUserLikes = async () => {
+		try {
+			const response = await fetch(
+				`http://localhost:5000/api/userLiked?username=${credentials.username}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (response.ok) {
+				const data = await response.json();
+				setUserLikes(data.liked);
+				console.log(userLikes);
+			} else {
+				console.error("failed to fetch user's Likes");
+			}
+		} catch (error) {
+			console.error("Error fetching user's Likes:", error);
+		}
+	};
+
 	useEffect(() => {
 		fetchUserRecipes();
-		fetchUserComments()
+		fetchUserComments();
+		fetchUserLikes();
 	});
 
 	const handleTabClick = (tab) => {
@@ -141,12 +140,11 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 		return (
 			<div className="activity-feed">
 				{userRecipes.map((recipe) => (
-					<div key={recipe.id}>
+					<div key={recipe.id} className="activity-item">
+						<h4>Title: {recipe.title}</h4>
 						<p>
-							<b>Title: {recipe.title}</b>
-							<br /> Likes: {recipe.likes}
+							Likes: <span className="likes">{recipe.likes}</span>
 						</p>
-						{/* Display other relevant recipe information */}
 					</div>
 				))}
 			</div>
@@ -157,12 +155,22 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 		return (
 			<div className="activity-feed">
 				{userComments.map((comment) => (
-					<div key={comment.id}>
-						<p>
-							<b>Title: {comment.title}</b>
-							<br /> Text : {comment.comment}
-						</p>
+					<div key={comment.id} className="activity-item">
+						<h4>Title: {comment.title}</h4>
+						<p>Text: {comment.comment}</p>
 						{/* Display other relevant recipe information */}
+					</div>
+				))}
+			</div>
+		);
+	};
+
+	const renderLikes = () => {
+		return (
+			<div className="activity-feed">
+				{userLikes.map((liked) => (
+					<div className="activity-item">
+						<h4>Title: {liked}</h4>
 					</div>
 				))}
 			</div>
@@ -190,6 +198,7 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 				return (
 					<div className="activity-feed">
 						<h3>Liked</h3>
+						{renderLikes()}
 					</div>
 				);
 			default:
@@ -277,6 +286,28 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
             background: linear-gradient(to bottom, #555, #333);
             color: #fff;
           }
+		  .activity-feed {
+			margin-top: 20px;
+		  }
+		
+		  .activity-item {
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			padding: 10px;
+			margin-bottom: 10px;
+		  }
+		
+		  .activity-item p {
+			margin: 0;
+		  }
+		
+		  .activity-item h4 {
+			margin-bottom: 5px;
+		  }
+		
+		  .likes {
+			color: #3273dc;
+		  }
         `}
 			</style>
 
@@ -287,31 +318,14 @@ const ProfilePage = ({ credentials, handleLogout, changePage }) => {
 			/>
 
 			<section>
-				<form>
-					<label htmlFor="name">Name/Username:</label>
-					<input
-						type="text"
-						id="name"
-						name="name"
-						placeholder="John Doe"
-						value={formData.name}
-						onChange={handleChange}
-					/>
-
-					<label htmlFor="bio">Bio/Description:</label>
-					<textarea
-						id="bio"
-						name="bio"
-						placeholder="A brief description..."
-						rows="4"
-						value={formData.bio}
-						onChange={handleChange}
-					></textarea>
-
-					<button type="button" onClick={handleProfileUpdate}>
-						Save Changes
-					</button>
-				</form>
+				<label htmlFor="name">Username:</label>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					value={credentials.username}
+					readOnly
+				/>
 
 				<div className="password-change">
 					<h3>Password Change</h3>

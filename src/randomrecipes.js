@@ -111,8 +111,9 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 
 	};
 
-	const handlePostComment = async (index, title, collection) => {
+	const handlePostComment = async (index, title, collection, clickEvent) => {
 		try {
+			clickEvent.stopPropagation();
 			console.log(
 				`Posting comment for recipe at index ${index}: ${commentText}`
 			);
@@ -216,6 +217,12 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 			height: "500px",
 			display: "inline-block",
 		},
+		activityItem :{
+			border: "1px solid #ddd",
+			borderRadius: "8px",
+			padding: "10px",
+			marginBottom: "10px",
+		  }
 	};
 
 	const renderRecipeBody = (body, expanded) => {
@@ -258,12 +265,14 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 		}
 
 		return (
-			<div>
+			<div style={styles.activityItem}>
+				<h4>
+					<b>Comments:</b>
+				</h4>
 				{comments.map((comment, commentIndex) => (
 					<div key={commentIndex}>
 						<p>
-							<b>{comment.user}</b>
-							: {comment.text}
+							<b>{comment.user}</b>: {comment.text}
 						</p>
 					</div>
 				))}
@@ -344,7 +353,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 							{renderRecipeBody(recipe.body, recipe.expanded)}
 							<div style={styles.smallerText}>{recipe.year}</div>
 							<div>
-								<h6>Comments:</h6>
 								{renderRecipeComments(recipe.comments)}
 							</div>
 							{/* Comment box */}
@@ -360,11 +368,12 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 										}
 									/>
 									<button
-										onClick={() =>
+										onClick={(clickEvent) =>
 											handlePostComment(
 												index,
 												recipe.title,
-												recipe.collection
+												recipe.collection,
+												clickEvent
 											)
 										}
 									>
