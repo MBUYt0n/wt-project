@@ -108,7 +108,6 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 	const handleComment = (index, clickEvent) => {
 		clickEvent.stopPropagation();
 		setCommentingIndex(index);
-
 	};
 
 	const handlePostComment = async (index, title, collection, clickEvent) => {
@@ -217,12 +216,12 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 			height: "500px",
 			display: "inline-block",
 		},
-		activityItem :{
+		activityItem: {
 			border: "1px solid #ddd",
 			borderRadius: "8px",
 			padding: "10px",
 			marginBottom: "10px",
-		  }
+		},
 	};
 
 	const renderRecipeBody = (body, expanded) => {
@@ -353,9 +352,7 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 							<div style={styles.title}>{recipe.title}</div>
 							{renderRecipeBody(recipe.body, recipe.expanded)}
 							<div style={styles.smallerText}>{recipe.year}</div>
-							<div>
-								{renderRecipeComments(recipe.comments)}
-							</div>
+							<div>{renderRecipeComments(recipe.comments)}</div>
 							{/* Comment box */}
 							{commentingIndex === index && (
 								<div>

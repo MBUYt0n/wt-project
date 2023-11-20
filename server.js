@@ -208,12 +208,11 @@ async function getRecipes(collectionName) {
 		.toArray();
 }
 
-app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
+app.post("/api/recipe/like/:id/:collectionName/:title", async (req, res) => {
 	const recipeId = req.params.id;
 	const title = req.params.title;
 	const collectionName = req.params.collectionName;
 	const username = req.headers.username;
-
 	const hasLiked = await mongoose.connection.db.collection("liked").findOne({
 		user: username,
 		liked: title,
