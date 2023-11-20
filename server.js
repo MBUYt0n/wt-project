@@ -210,12 +210,13 @@ async function getRecipes(collectionName) {
 
 app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 	const recipeId = req.params.id;
+	const title = req.params.title;
 	const collectionName = req.params.collectionName;
 	const username = req.headers.username;
 
 	const hasLiked = await mongoose.connection.db.collection("liked").findOne({
 		user: username,
-		liked: recipeId,
+		liked: title,
 	});
 
 	if (!hasLiked) {
@@ -223,7 +224,7 @@ app.post("/api/recipe/like/:id/:collectionName", async (req, res) => {
 			// Update likes for the recipe in the specified collection
 			await updateLikes(collectionName, recipeId);
 
-			await updateLikedCollection(username, recipeId);
+			await updateLikedCollection(username, title);
 
 			res.json({ message: "Likes updated successfully" });
 		} catch (error) {
@@ -244,10 +245,10 @@ async function updateLikes(collectionName, recipeId) {
 		);
 }
 
-async function updateLikedCollection(username, recipeId) {
+async function updateLikedCollection(username, title) {
 	await mongoose.connection.db
 		.collection("liked")
-		.updateOne({ user: username }, { $addToSet: { liked: recipeId } });
+		.updateOne({ user: username }, { $addToSet: { liked: title } });
 }
 
 app.post("/api/recipe/comment/:id", async (req, res) => {

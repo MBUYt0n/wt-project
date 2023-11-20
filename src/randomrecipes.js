@@ -60,7 +60,7 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 		setRandomRecipes(updatedRecipes);
 	};
 
-	const handleLike = async (index, collectionName, clickEvent) => {
+	const handleLike = async (index, collectionName, clickEvent, title) => {
 		console.log("Handling like...");
 		if (likeLoading[index]) return;
 
@@ -73,7 +73,7 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 			});
 
 			const response = await fetch(
-				`http://localhost:5000/api/recipe/like/${randomRecipes[index]._id}/${collectionName}`,
+				`http://localhost:5000/api/recipe/like/${randomRecipes[index]._id}/${collectionName}/${title}`,
 				{
 					method: "POST",
 					headers: {
@@ -308,7 +308,8 @@ const RandomRecipes = ({ credentials, handleLogout, changePage }) => {
 									handleLike(
 										index,
 										recipe.collection,
-										clickEvent
+										clickEvent,
+										recipe.title
 									)
 								}
 								style={styles.likeIcon}
