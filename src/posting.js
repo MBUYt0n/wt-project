@@ -128,7 +128,7 @@ const RichTextEditor = ({
 			setTitle("");
 			setContent("");
 			setImage(null);
-
+			changePage("home");
 			console.log("Data posted successfully");
 		} catch (error) {
 			console.error("Error posting content:", error);

@@ -1,14 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
+
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false, limit: "15mb" }));
-app.use(bodyParser.json({ limit: "15mb" }));
+app.use(express.json({limit:"100mb"}));
+
 
 mongoose.connect(
 	"mongodb+srv://pes1202201377:lisanlisan@cluster0.buvuxr1.mongodb.net/wwt-project?retryWrites=true&w=majority",
@@ -174,14 +172,13 @@ app.post("/api/changePassword", async (req, res) => {
 
 app.post("/api/saveContent", async (req, res) => {
 	const { title, content, image, username } = req.body;
-	if (!title || !content || !username) {
+	if (!title || !content || !username || !image ) {
 		return res.status(400).json({
 			message: "Title, content, date, and username are required fields.",
 		});
 	}
 	try {
 		const collectionName = username;
-
 		const collection = mongoose.connection.db.collection(collectionName);
 		const newContent = {
 			title: title,
